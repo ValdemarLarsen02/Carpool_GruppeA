@@ -10,10 +10,10 @@ public class Inquiry {
     private Date createdDate;
     private boolean emailSent;
     private Customer customer;
-    private Seller assignedSeller;
+    private Salesman assignedSalesman;
 
-    public void assignSeller(Seller seller) {
-        this.assignedSeller = seller;
+    public void assignSeller(Salesman salesman) {
+        this.assignedSalesman = salesman;
     }
 
     public void updateStatus(String status) {
