@@ -12,6 +12,17 @@ public class Inquiry {
     private Customer customer;
     private Salesman assignedSalesman;
 
+    public Inquiry(int id, String dimensions, String materials, String status, Date createdDate, boolean emailSent, Customer customer, Salesman assignedSalesman) {
+        this.id = id;
+        this.dimensions = dimensions;
+        this.materials = materials;
+        this.status = status;
+        this.createdDate = createdDate;
+        this.emailSent = emailSent;
+        this.customer = customer;
+        this.assignedSalesman = assignedSalesman;
+    }
+
     public void assignSeller(Salesman salesman) {
         this.assignedSalesman = salesman;
     }
