@@ -1,6 +1,7 @@
 package app.config;
 
 
+import app.controllers.DatabaseController;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
 import java.sql.*;
@@ -9,17 +10,18 @@ import java.util.List;
 
 public class Salesman {
 
+    DatabaseController db = new DatabaseController();
     private String name;
     private Integer id;
     private String email;
 
 
     public List<Inquiry> viewInquiries() {
-        List<Inquiry> inqueries = new ArrayList<>();
+        List<Inquiry> inquiries = new ArrayList<>();
 
         String query = "SELECT id, customer_name, created_date, status, dimensions, materials, assigned_salesman, email_sent FROM inqueries ORDER BY id";
 
-        try (Connection connection = db.controller.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = db.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
@@ -31,13 +33,13 @@ public class Salesman {
                 Salesman assignedSalesman = resultSet.getString("assigned_salesman");
                 Boolean emailSent = resultSet.getBoolean("email_sent");
 
-                inqueries.add(new Inquiry(id, dimensions, materials, status, createdDate, emailSent, customerName, assignedSalesman));
+                inquiries.add(new Inquiry(id, dimensions, materials, status, createdDate, emailSent, customerName, assignedSalesman));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return inqueries;
+        return inquiries;
     }
 
     //Skal sørges for at metoden tjekker om der allerede er en salesman assigned
@@ -45,7 +47,7 @@ public class Salesman {
         String checkQuery = "SELECT assigned_salesman FROM inqueries WHERE id = ?";
         String query = "UPDATE inqueries SET assigned_salesman = ?, salesman_id = ? WHERE id = ?";
 
-        try (Connection connection = db.controller.getConnection()) {
+        try (Connection connection = db.getConnection()) {
 
             try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
                 checkStatement.setInt(1, inquiry.getId());
@@ -79,6 +81,8 @@ public class Salesman {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -114,7 +118,7 @@ public class Salesman {
         queryBuilder.append(" WHERE id = ?");
         parameters.add(inquiry.getId());
 
-        try (Connection connection = db.controller.GetConnection();
+        try (Connection connection = db.getConnection();
              PreparedStatement statement = connection.prepareStatement(queryBuilder.toString())) {
 
             for (int i = 0; i < parameters.size(); i++) {
