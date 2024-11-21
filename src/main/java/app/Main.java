@@ -1,13 +1,21 @@
 package app;
 
+import app.config.Inquiry;
+import app.config.Salesman;
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
+import app.persistence.InquiryMapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import app.controllers.DatabaseController;
+
+import java.sql.ResultSet;
+
 public class Main {
     public static void main(String[] args)
     {
+
+
         // Initializing Javalin and Jetty webserver
 
         Javalin app = Javalin.create(config -> {
@@ -22,8 +30,12 @@ public class Main {
         dbController.initialize();
 
 
+
         // Routing
 
         app.get("/", ctx ->  ctx.render("index.html"));
+
+
+
     }
 }

@@ -12,7 +12,7 @@ public class Inquiry {
     private Customer customer;
     private Salesman assignedSalesman;
 
-    public Inquiry(int id, String dimensions, String materials, String status, Date createdDate, Boolean emailSent, Customer customer, Salesman assignedSalesman) {
+    public Inquiry(int id, Customer customer, Salesman assignedSalesman,  boolean emailSent, String status, Date createdDate, String materials, String dimensions){
         this.id = id;
         this.materials = materials;
         this.dimensions = dimensions;

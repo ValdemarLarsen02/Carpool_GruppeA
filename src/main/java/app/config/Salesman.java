@@ -2,7 +2,7 @@ package app.config;
 
 
 import app.controllers.DatabaseController;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import app.persistence.InquiryMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,36 +16,44 @@ public class Salesman {
     private String email;
 
 
-    public List<Inquiry> viewInquiries() {
+    public List<Inquiry> getInquiriesFromDatabase() {
         List<Inquiry> inquiries = new ArrayList<>();
 
-        String query = "SELECT id, customer_name, created_date, status, dimensions, materials, assigned_salesman, email_sent FROM inqueries ORDER BY id";
+        String query = """
+                SELECT 
+                    inquiries.id, inquiries.email_sent, inquiries.status, 
+                    inquiries.created_date, inquiries.dimensions, inquiries.materials,
+                    customers.name, customers.email,
+                    salesmen.id, salesmen.name, salesmen.email
+                FROM inquiries
+                JOIN customers ON inquiries.customer_id = customers.id
+                LEFT JOIN salesmen ON inquiries.salesman_id = salesmen.id
+                ORDER BY inquiries.id
+                """;
 
-        try (Connection connection = db.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = db.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                Customer customerName = resultSet.getString("customer_name");
-                Date createdDate = resultSet.getDate("created_date");
-                String status = resultSet.getString("status");
-                String dimensions = resultSet.getString("dimensions");
-                String materials = resultSet.getString("materials");
-                Salesman assignedSalesman = resultSet.getString("assigned_salesman");
-                Boolean emailSent = resultSet.getBoolean("email_sent");
-
-                inquiries.add(new Inquiry(id, dimensions, materials, status, createdDate, emailSent, customerName, assignedSalesman));
+                inquiries.add(InquiryMapper.mapInquiry(resultSet));
             }
-        } catch (Exception e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return inquiries;
     }
 
-    //Skal sørges for at metoden tjekker om der allerede er en salesman assigned
+    public List<Inquiry> viewInquiries() {
+        return getInquiriesFromDatabase();
+    }
+
+
     public void assignInquiry(Inquiry inquiry, Salesman salesman) {
-        String checkQuery = "SELECT assigned_salesman FROM inqueries WHERE id = ?";
-        String query = "UPDATE inqueries SET assigned_salesman = ?, salesman_id = ? WHERE id = ?";
+        String checkQuery = "SELECT salesman_id FROM inquiries WHERE id = ?";
+        String query = "UPDATE inquiries SET salesman_id = ? WHERE id = ?";
 
         try (Connection connection = db.getConnection()) {
 
@@ -53,22 +61,23 @@ public class Salesman {
                 checkStatement.setInt(1, inquiry.getId());
                 try (ResultSet resultSet = checkStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        String existingSalesman = resultSet.getString("assigned_salesman");
-                        if (existingSalesman != null) {
-                            System.out.println("Forespørgsel " + inquiry.getId() + "har allerede en sælger tildelt: " + existingSalesman);
+                        int existingSalesmanId = resultSet.getInt("salesman_id");
+                        if (existingSalesmanId != 0) {
+
+                            System.out.println("Forespørgsel " + inquiry.getId() + " har allerede en sælger tildelt.");
                             return;
                         }
                     }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+
             }
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-
-                statement.setString(1, salesman.getName());
-                statement.setInt(2, salesman.getId());
-                statement.setInt(3, inquiry.getId());
+                statement.setInt(1, salesman.getId());
+                statement.setInt(2, inquiry.getId());
 
                 int rowsAffected = statement.executeUpdate();
 
@@ -88,33 +97,35 @@ public class Salesman {
 
 
     public void editInquiry(Inquiry inquiry) {
-        StringBuilder queryBuilder = new StringBuilder("UPDATE inqueries SET ");
+        StringBuilder queryBuilder = new StringBuilder("UPDATE inquiries SET ");
         List<Object> parameters = new ArrayList<>();
 
         if (inquiry.getDimensions() != null) {
-            queryBuilder.append(" dimensions = ?, ");
+            queryBuilder.append("dimensions = ?, ");
             parameters.add(inquiry.getDimensions());
         }
 
         if (inquiry.getMaterials() != null) {
-            queryBuilder.append(" materials = ?, ");
+            queryBuilder.append("materials = ?, ");
             parameters.add(inquiry.getMaterials());
         }
 
         if (inquiry.getAssignedSalesman() != null) {
-            queryBuilder.append(" assigned_salesman = ?, ");
-            parameters.add(inquiry.getAssignedSalesman());
+            queryBuilder.append("salesman_id = ?, ");
+            parameters.add(inquiry.getAssignedSalesman().getId());
         }
 
         if (inquiry.getStatus() != null) {
-            queryBuilder.append(" status = ?, ");
+            queryBuilder.append("status = ?, ");
             parameters.add(inquiry.getStatus());
         }
 
         if (parameters.isEmpty()) {
             return;
         }
+
         queryBuilder.setLength(queryBuilder.length() - 2);
+
         queryBuilder.append(" WHERE id = ?");
         parameters.add(inquiry.getId());
 
