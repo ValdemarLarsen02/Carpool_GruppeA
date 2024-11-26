@@ -2,6 +2,8 @@ package app;
 
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
+import app.controllers.DatabaseController;
+import app.controllers.StripePayment;
 import app.utils.Product;
 import app.utils.Scrapper;
 import io.javalin.Javalin;
@@ -23,10 +25,15 @@ public class Main {
         // Routing
 
 
+        StripePayment.registerRoutes(app);
 
 
         app.get("/", ctx ->  ctx.render("index.html"));
+        app.get("/test", ctx -> ctx.render("payment.html"));
 
+        DatabaseController dbController = new DatabaseController();
+
+        dbController.initialize();
 
         //Test af scrapper:
         Scrapper scrapper = new Scrapper();

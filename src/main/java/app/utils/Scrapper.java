@@ -36,7 +36,7 @@ public class Scrapper {
             // Send forespørgslen
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 200) {
+            if (response.statusCode() == 200) { // Tjekker at vi modtager et succesfuldt response fra vores HttpResponse.
                 // Parse JSON-responsen
                 JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
                 JsonObject results = jsonResponse.getAsJsonObject("results");
@@ -60,6 +60,7 @@ public class Scrapper {
 
                 return products;
             } else {
+                //Viser hvilken fejlkode vi modtager.
                 System.out.println("Fejl: HTTP-statuskode " + response.statusCode());
             }
         } catch (Exception e) {
