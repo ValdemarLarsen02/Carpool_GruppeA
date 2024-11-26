@@ -1,5 +1,7 @@
 package app.config;
 
+import app.models.Carport;
+
 import java.util.List;
 import java.util.Map;
 
