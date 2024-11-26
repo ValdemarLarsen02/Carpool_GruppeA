@@ -1,53 +1,51 @@
 package app;
 
-import app.Services.InquiryService;
-import app.config.*;
-import app.controllers.InquiryController;
-import app.persistence.InquiryMapper;
+import app.config.SessionConfig;
+import app.config.ThymeleafConfig;
+import app.controllers.DatabaseController;
+import app.controllers.StripePayment;
+import app.utils.Product;
+import app.utils.Scrapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
-import app.controllers.DatabaseController;
 
-import java.sql.ResultSet;
-import java.util.Date;
+import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-
-
+    public static void main(String[] args)
+    {
         // Initializing Javalin and Jetty webserver
 
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add("/public");
-            config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
+            config.jetty.modifyServletContextHandler(handler ->  handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
 
-        //database:
+        // Routing
+
+
+        StripePayment.registerRoutes(app);
+
+
+        app.get("/", ctx ->  ctx.render("index.html"));
+        app.get("/test", ctx -> ctx.render("payment.html"));
+
         DatabaseController dbController = new DatabaseController();
 
         dbController.initialize();
-        Customer customer = new Customer();
-        customer.setId(1);
-        customer.setName("John Doe");
-        customer.setEmail("john.doe@example.com");
 
-        customer.saveToDatabase(dbController);
+        //Test af scrapper:
+        Scrapper scrapper = new Scrapper();
 
-        Salesman salesman = null;
+        // Søg efter produkter
+        List<Product> products = scrapper.searchProducts("45x195 540");
 
-        Inquiry inquiry = new Inquiry(1, customer, salesman, false, "Pending", new Date(), "steel, Glass", "200x300x400");
-        inquiry.saveToDatabase(dbController);
-
-
-
-
-
-
-        // Routing
-
-        app.get("/", ctx -> ctx.render("index.html"));
-
+        // Udskriv resultaterne
+        for (Product product : products) {
+            System.out.println(product);
+            System.out.println("----------------------------");
+        }
 
     }
 }
