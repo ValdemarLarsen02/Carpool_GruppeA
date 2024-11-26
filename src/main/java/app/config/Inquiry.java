@@ -1,5 +1,10 @@
 package app.config;
 
+import app.controllers.DatabaseController;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Inquiry {
@@ -12,7 +17,11 @@ public class Inquiry {
     private Customer customer;
     private Salesman assignedSalesman;
 
-    public Inquiry(int id, Customer customer, Salesman assignedSalesman,  boolean emailSent, String status, Date createdDate, String materials, String dimensions){
+    public Inquiry() {
+
+    }
+
+    public Inquiry(int id, Customer customer, Salesman assignedSalesman, boolean emailSent, String status, Date createdDate, String materials, String dimensions) {
         this.id = id;
         this.materials = materials;
         this.dimensions = dimensions;
@@ -23,13 +32,51 @@ public class Inquiry {
         this.assignedSalesman = assignedSalesman;
     }
 
-    public void assignSeller(Salesman salesman) {
-        this.assignedSalesman = salesman;
+    //Test metode - Jonas laver den rigtige.
+    public void saveToDatabase(DatabaseController dbController) {
+        String insertQuery = """
+                INSERT INTO inquiries (id, customer_id, salesman_id, email_sent, status, created_date, dimensions, materials)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (id) 
+                DO UPDATE SET 
+                    customer_id = EXCLUDED.customer_id, 
+                    salesman_id = EXCLUDED.salesman_id, 
+                    email_sent = EXCLUDED.email_sent, 
+                    status = EXCLUDED.status, 
+                    created_date = EXCLUDED.created_date, 
+                    dimensions = EXCLUDED.dimensions, 
+                    materials = EXCLUDED.materials
+                """;
+
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            // Sæt parametre for INSERT-forespørgslen
+            statement.setInt(1, this.id);
+            statement.setInt(2, this.customer.getId());
+            if (this.assignedSalesman != null) {
+                statement.setInt(3, this.assignedSalesman.getId());
+            } else {
+                statement.setNull(3, java.sql.Types.INTEGER);
+            }
+            statement.setBoolean(4, this.emailSent);
+            statement.setString(5, this.status);
+            statement.setDate(6, new java.sql.Date(this.createdDate.getTime()));
+            statement.setString(7, this.dimensions);
+            statement.setString(8, this.materials);
+
+            // Udfør forespørgslen
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Inquiry gemt i databasen.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Kunne ikke gemme Inquiry i databasen.");
+        }
     }
 
-    public void updateStatus(String status) {
-        this.status = status;
-    }
 
     public int getId() {
         return id;
@@ -41,18 +88,6 @@ public class Inquiry {
 
     public String getStatus() {
         return status;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public boolean isEmailSent() {
-        return emailSent;
-    }
-
-    public Customer getCustomer() {
-        return customer;
     }
 
     public Salesman getAssignedSalesman() {
@@ -71,21 +106,15 @@ public class Inquiry {
         this.dimensions = dimensions;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setMaterials(String materials) {
+        this.materials = materials;
     }
+
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public void setEmailSent(boolean emailSent) {
-        this.emailSent = emailSent;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
 
     public void setAssignedSalesman(Salesman assignedSalesman) {
         this.assignedSalesman = assignedSalesman;
