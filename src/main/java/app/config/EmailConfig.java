@@ -17,10 +17,7 @@ public class EmailConfig {
         return Session.getInstance(props, new jakarta.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(
-                        "MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net",
-                        "MKWpmxZ3tS2bO2Pd"
-                );
+                return new PasswordAuthentication("MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net", "MKWpmxZ3tS2bO2Pd");
             }
         });
     }

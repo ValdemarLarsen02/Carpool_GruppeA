@@ -33,9 +33,7 @@ public class InquiryService {
                 """;
 
         //Udfør query og map resultaterne
-        try (Connection connection = db.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = db.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 inquiries.add(InquiryMapper.mapInquiry(resultSet));
@@ -142,8 +140,7 @@ public class InquiryService {
         queryBuilder.append(" WHERE id = ?");
         parameters.add(inquiry.getId());
 
-        try (Connection connection = db.getConnection();
-             PreparedStatement statement = connection.prepareStatement(queryBuilder.toString())) {
+        try (Connection connection = db.getConnection(); PreparedStatement statement = connection.prepareStatement(queryBuilder.toString())) {
 
             //Binder parametre til query
             for (int i = 0; i < parameters.size(); i++) {

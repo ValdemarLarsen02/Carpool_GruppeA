@@ -20,7 +20,6 @@ public class InquiryController {
     private Date date;
 
 
-
     public InquiryController(InquiryService inquiryService) {
         this.inquiryService = inquiryService;
     }

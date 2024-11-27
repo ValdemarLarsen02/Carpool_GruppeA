@@ -49,8 +49,7 @@ public class Inquiry {
                     materials = EXCLUDED.materials
                 """;
 
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
             // Sæt parametre for INSERT-forespørgslen
             statement.setInt(1, this.id);

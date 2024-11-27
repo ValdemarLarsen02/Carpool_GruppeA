@@ -50,7 +50,7 @@ public class EmailService {
     }
 
     //Byg emailens indhold med kundes forespørgsel
-    private String buildInquiryEmailContent(Customer customer, Inquiry inquiry){
+    private String buildInquiryEmailContent(Customer customer, Inquiry inquiry) {
         StringBuilder content = new StringBuilder();
         content.append("<h1>Forespørgsel om Carport</h1>");
         content.append("<p><strong>Navn:</strong> ").append(customer.getName()).append("</p>");

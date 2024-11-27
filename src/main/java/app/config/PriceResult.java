@@ -25,10 +25,6 @@ public class PriceResult {
 
     @Override
     public String toString() {
-        return "PriceResult{" +
-                "suggestedPrice=" + suggestedPrice +
-                ", totalCost=" + totalCost +
-                ", coveragePercentage=" + coveragePercentage +
-                '}';
+        return "PriceResult{" + "suggestedPrice=" + suggestedPrice + ", totalCost=" + totalCost + ", coveragePercentage=" + coveragePercentage + '}';
     }
 }

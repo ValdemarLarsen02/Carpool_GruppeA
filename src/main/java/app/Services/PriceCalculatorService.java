@@ -17,30 +17,60 @@ public class PriceCalculatorService {
 
     }
 
-    public PriceResult generatePrices(String searchTerm) {
+    public String generatePrices(String searchTerm) {
         List<Product> products = scrapper.searchProducts(searchTerm);
 
         if (products.isEmpty()) {
-            System.out.println("No products found for search term: " + searchTerm);
+            System.out.println("Ingen produkter blev fundet for: " + searchTerm);
             return null;
         }
 
-        double totalPrice = products.stream().
-                mapToDouble(Product::getPriceInclVat)
-                .sum();
+        StringBuilder summary = new StringBuilder();
+        summary.append("Salgsoversigt for søgning: ").append(searchTerm).append("\n\n");
 
-        double totalCost = totalPrice * 0.8; //Eksempel
-        double coverage = calculateCoverage(totalPrice, totalCost);
+        double totalRevenue = 0;
+        double totalCost = 0;
 
-        return new PriceResult(totalPrice, totalCost, coverage);
+        for (Product product : products) {
+            double price = parsePrice(product.getPrice());
+            double cost = calculateCost(price);
+            totalRevenue += price;
+            totalCost += cost;
 
+            summary.append(product).append("\n");
+
+        }
+
+        double coverage = calculateCoverage(totalRevenue, totalCost);
+
+        PriceResult priceResult = new PriceResult(totalRevenue, totalCost, coverage);
+
+        summary.append("\nSamlet pris for produkter: ").append(String.format("%.2f", priceResult.getSuggestedPrice())).append(" kr\n");
+        summary.append("Samlede omkostninger: ").append(String.format("%.2f", priceResult.getTotalCost())).append(" kr\n");
+        summary.append("Dækningsgrad: ").append(String.format("%.2f", priceResult.getCoveragePercentage())).append(" %\n");
+
+        return summary.toString();
 
     }
+
 
     private double calculateCoverage(double totalPrice, double totalCost) {
         if (totalPrice == 0) {
             return 0;
         }
         return ((totalPrice - totalCost) / totalPrice) * 100;
+    }
+
+    private double parsePrice(String price) {
+        try {
+            return Double.parseDouble(price.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+
+    }
+
+    private double calculateCost(double price) {
+        return price * 0.7;
     }
 }

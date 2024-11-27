@@ -62,23 +62,11 @@ public class InquiryMapper {
 
         // Mapper Inquiry med data fra ResultSet
         try {
-            return new Inquiry(
-                    resultSet.getInt("inquiries.id"),
-                    customer,
-                    assignedSalesman,
-                    resultSet.getBoolean("inquiries.email_sent"),
-                    resultSet.getString("inquiries.status"),
-                    resultSet.getDate("inquiries.created_date"),
-                    resultSet.getString("inquiries.dimensions"),
-                    resultSet.getString("inquiries.materials"),
-                    resultSet.getBoolean("inquiries.phone_number")
-            );
+            return new Inquiry(resultSet.getInt("inquiries.id"), customer, assignedSalesman, resultSet.getBoolean("inquiries.email_sent"), resultSet.getString("inquiries.status"), resultSet.getDate("inquiries.created_date"), resultSet.getString("inquiries.dimensions"), resultSet.getString("inquiries.materials"), resultSet.getBoolean("inquiries.phone_number"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
-
 
 
 }
