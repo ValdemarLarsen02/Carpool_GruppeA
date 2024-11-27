@@ -16,12 +16,13 @@ public class Inquiry {
     private boolean emailSent;
     private Customer customer;
     private Salesman assignedSalesman;
+    private boolean specialRequest;
 
     public Inquiry() {
 
     }
 
-    public Inquiry(int id, Customer customer, Salesman assignedSalesman, boolean emailSent, String status, Date createdDate, String materials, String dimensions) {
+    public Inquiry(int id, Customer customer, Salesman assignedSalesman, boolean emailSent, String status, Date createdDate, String materials, String dimensions, Boolean specialRequest) {
         this.id = id;
         this.materials = materials;
         this.dimensions = dimensions;
@@ -118,5 +119,21 @@ public class Inquiry {
 
     public void setAssignedSalesman(Salesman assignedSalesman) {
         this.assignedSalesman = assignedSalesman;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public boolean isEmailSent() {
+        return emailSent;
+    }
+
+    public boolean isSpecialRequest() {
+        return specialRequest;
     }
 }

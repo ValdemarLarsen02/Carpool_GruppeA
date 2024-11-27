@@ -1,5 +1,7 @@
 package app;
 
+import app.Services.EmailService;
+import app.config.Customer;
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
 import app.controllers.DatabaseController;
@@ -46,6 +48,8 @@ public class Main {
             System.out.println(product);
             System.out.println("----------------------------");
         }
+
+
 
     }
 }

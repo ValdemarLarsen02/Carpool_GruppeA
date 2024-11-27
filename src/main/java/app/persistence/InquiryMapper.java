@@ -70,11 +70,16 @@ public class InquiryMapper {
                     resultSet.getString("inquiries.status"),
                     resultSet.getDate("inquiries.created_date"),
                     resultSet.getString("inquiries.dimensions"),
-                    resultSet.getString("inquiries.materials")
+                    resultSet.getString("inquiries.materials"),
+                    resultSet.getBoolean("inquiries.phone_number")
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+
+
+
 }
 

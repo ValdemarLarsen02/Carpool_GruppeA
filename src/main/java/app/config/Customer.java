@@ -12,6 +12,17 @@ public class Customer {
     private String name;
     private String email;
     private int id;
+    private int phoneNumber;
+
+    public Customer(String name, String email, int id, int phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.id = id;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Customer() {
+    }
 
     //Test metode
     public void saveToDatabase(DatabaseController dbController) {
@@ -69,4 +80,17 @@ public class Customer {
     public void setId(int id) {
         this.id = id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
 }
+
