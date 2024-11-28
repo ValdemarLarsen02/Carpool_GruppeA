@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carport Forespørgsel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Forespørgsel på Carport</h1>
+    <form method="POST" action="/submit-request">
+        <!-- Bredde -->
+        <div class="mb-3">
+            <label for="width" class="form-label">Bredde på Carport (cm)</label>
+            <select name="width" id="width" class="form-select">
+                <th:block th:each="option : ${widthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
+            </select>
+        </div>
+        <!-- Længde -->
+        <div class="mb-3">
+            <label for="length" class="form-label">Længde på Carport (cm)</label>
+            <select name="length" id="length" class="form-select">
+                <th:block th:each="option : ${lengthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
+            </select>
+        </div>
+        <!-- Redskabsrum -->
+        <div class="mb-3">
+            <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
+            <select name="shedLength" id="shedLength" class="form-select">
+                <th:block th:each="option : ${shedOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
+            </select>
+        </div>
+        <!-- Højde -->
+        <div class="mb-3">
+            <label for="height" class="form-label">Højde på redskabsrum (cm)</label>
+            <select name="height" id="height" class="form-select">
+                <th:block th:each="option : ${heightOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
+            </select>
+        </div>
+        <!-- Personlige oplysninger -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Navn</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Adresse</label>
+            <input type="text" name="address" id="address" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="zipcode" class="form-label">Postnummer</label>
+            <input type="text" name="zipcode" id="zipcode" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="city" class="form-label">By</label>
+            <input type="text" name="city" id="city" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Telefon</label>
+            <input type="text" name="phone" id="phone" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <!-- Kommentarer -->
+        <div class="mb-3">
+            <label for="comments" class="form-label">Kommentarer</label>
+            <textarea name="comments" id="comments" class="form-control"></textarea>
+        </div>
+        <!-- Samtykke -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="consent" id="consent" class="form-check-input" required>
+            <label for="consent" class="form-check-label">Jeg accepterer betingelserne</label>
+        </div>
+        <!-- Send-knap -->
+        <button type="submit" class="btn btn-primary">Send forespørgsel</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
