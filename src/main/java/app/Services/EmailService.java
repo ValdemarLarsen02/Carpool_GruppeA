@@ -17,7 +17,7 @@ public class EmailService {
 
     public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry) throws MessagingException {
 
-        //Opretter session til at sende mailen
+        // Opretter session til at sende mailen
         Properties props = new Properties();
         props.put("mail.smtp.host", SMTP_HOST);
         props.put("mail.smtp.port", SMTP_PORT);
@@ -29,27 +29,25 @@ public class EmailService {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(USERNAME, PASSWORD);
             }
-
-
         });
 
-        //Opret emailen
+        // Opret emailen
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("sender@example.com")); //Opdater
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("sælger@example.com"));
+        message.setFrom(new InternetAddress("sender@example.com")); // Opdater til din e-mail
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("sælger@example.com")); // Opdater modtageren
         message.setSubject("Ny forespørgsel om carport");
 
-        //Byg emailens indhold
+        // Byg emailens indhold
         String emailContent = buildInquiryEmailContent(customer, inquiry);
 
-        //Sæt indholdet af emailen
+        // Sæt indholdet af emailen
         message.setContent(emailContent, "text/html");
 
-        //Send emailen
+        // Send emailen
         Transport.send(message);
     }
 
-    //Byg emailens indhold med kundes forespørgsel
+    // Byg emailens indhold med kundens forespørgsel
     private String buildInquiryEmailContent(Customer customer, Inquiry inquiry) {
         StringBuilder content = new StringBuilder();
         content.append("<h1>Forespørgsel om Carport</h1>");
@@ -59,11 +57,10 @@ public class EmailService {
 
         // Inkluder forespørgselsdetaljer
         content.append("<h2>Carport Forespørgsel</h2>");
-        content.append("<p><strong>Størrelse:</strong> ").append(inquiry.getDimensions()).append("</p>");
-        content.append("<p><strong>Materiale:</strong> ").append(inquiry.getMaterials()).append("</p>");
-        content.append("<p><strong>Specifikke Anmodninger:</strong> ").append(inquiry.isSpecialRequest()).append("</p>");
+        content.append("<p><strong>Længde:</strong> ").append(inquiry.getLength()).append(" m</p>");
+        content.append("<p><strong>Bredde:</strong> ").append(inquiry.getWidth()).append(" m</p>");
+        content.append("<p><strong>Specifik Anmodning:</strong> ").append(inquiry.isSpecialRequest() ? "Ja" : "Nej").append("</p>");
 
         return content.toString();
     }
-
 }

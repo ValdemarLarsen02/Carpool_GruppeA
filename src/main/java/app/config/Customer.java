@@ -13,12 +13,18 @@ public class Customer {
     private String email;
     private int id;
     private int phoneNumber;
+    private String address;
+    private String city;
+    private int zipcode;
 
-    public Customer(String name, String email, int id, int phoneNumber) {
+    public Customer(String name, String email, int phoneNumber, String address, String city, int zipcode) {
         this.name = name;
         this.email = email;
         this.id = id;
         this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.city = city;
+        this.zipcode = zipcode;
     }
 
     public Customer() {
@@ -27,26 +33,31 @@ public class Customer {
     //Test metode
     public void saveToDatabase(DatabaseController dbController) {
         String insertQuery = """
-                INSERT INTO customers (id, name, email)
-                VALUES (?, ?, ?)
-                ON CONFLICT (id) 
-                DO UPDATE SET 
-                    name = EXCLUDED.name,
-                    email = EXCLUDED.email
+                INSERT INTO customers (name, email, phone, address, city, zipcode)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement statement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            // Sæt parametre for INSERT-forespørgslen
-            statement.setInt(1, this.id);
-            statement.setString(2, this.name);
-            statement.setString(3, this.email);
 
-            // Udfør forespørgslen
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Kunde gemt i databasen.");
+            statement.setString(1, this.name);
+            statement.setString(2, this.email);
+            statement.setInt(3, this.phoneNumber);
+            statement.setString(4, this.address);
+            statement.setString(5, this.city);
+            statement.setInt(6, this.zipcode);
+
+
+            statement.executeUpdate();
+
+
+            var keys = statement.getGeneratedKeys();
+            if (keys.next()) {
+                this.id = keys.getInt(1);
             }
+
+            System.out.println("Kunde gemt i databasen med ID: " + this.id);
 
         } catch (SQLException e) {
             e.printStackTrace();

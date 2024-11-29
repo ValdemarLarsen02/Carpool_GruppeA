@@ -22,7 +22,7 @@ public class DatabaseController {
             config.setPassword(ConfigLoader.getProperty("db.password"));
             config.addDataSourceProperty("sslmode", ConfigLoader.getProperty("db.sslmode"));
 
-            // Optimeringsindstillinger og forskellinge settings værdier er i ms.
+            // Optimeringsindstillinger og forskelline settings værdier er i ms.
             config.setMaximumPoolSize(10); // Hvor mange forbindelser kan vi have i vores pool?
             config.setMinimumIdle(2);     // Minimum antal ledige forbindelser
             config.setIdleTimeout(30000); // Timeout for inaktive forbindelser

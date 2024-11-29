@@ -1,7 +1,8 @@
 package app.config;
 
+import app.config.Customer;
+import app.config.Salesman;
 import app.controllers.DatabaseController;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -9,34 +10,35 @@ import java.util.Date;
 
 public class Inquiry {
     private int id;
-    private String materials;
-    private String dimensions;
+    private Double length;
+    private Double width;
     private String status;
     private Date createdDate;
     private boolean emailSent;
     private Customer customer;
     private Salesman assignedSalesman;
-    private boolean specialRequest;
+    private Boolean specialRequest;
+
 
     public Inquiry() {
-
     }
 
-    public Inquiry(int id, Customer customer, Salesman assignedSalesman, boolean emailSent, String status, Date createdDate, String materials, String dimensions, Boolean specialRequest) {
+    public Inquiry(int id, Customer customer, Salesman assignedSalesman, boolean emailSent, String status,
+                   Date createdDate, double length, double width, Boolean specialRequest) {
         this.id = id;
-        this.materials = materials;
-        this.dimensions = dimensions;
+        this.length = length;
+        this.width = width;
         this.status = status;
         this.createdDate = createdDate;
         this.emailSent = emailSent;
         this.customer = customer;
         this.assignedSalesman = assignedSalesman;
+        this.specialRequest = specialRequest;
     }
 
-    //Test metode - Jonas laver den rigtige.
     public void saveToDatabase(DatabaseController dbController) {
         String insertQuery = """
-                INSERT INTO inquiries (id, customer_id, salesman_id, email_sent, status, created_date, dimensions, materials)
+                INSERT INTO inquiries (customer_id, salesman_id, email_sent, status, created_date, length, width, special_request)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) 
                 DO UPDATE SET 
@@ -45,30 +47,33 @@ public class Inquiry {
                     email_sent = EXCLUDED.email_sent, 
                     status = EXCLUDED.status, 
                     created_date = EXCLUDED.created_date, 
-                    dimensions = EXCLUDED.dimensions, 
-                    materials = EXCLUDED.materials
+                    length = EXCLUDED.length,
+                    width = EXCLUDED.width,
+                    special_request = EXCLUDED.special_request
                 """;
 
-        try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
-            // Sæt parametre for INSERT-forespørgslen
-            statement.setInt(1, this.id);
-            statement.setInt(2, this.customer.getId());
+            statement.setInt(1, this.customer.getId());
             if (this.assignedSalesman != null) {
-                statement.setInt(3, this.assignedSalesman.getId());
+                statement.setInt(2, this.assignedSalesman.getId());
             } else {
-                statement.setNull(3, java.sql.Types.INTEGER);
+                statement.setNull(2, java.sql.Types.INTEGER);
             }
-            statement.setBoolean(4, this.emailSent);
-            statement.setString(5, this.status);
-            statement.setDate(6, new java.sql.Date(this.createdDate.getTime()));
-            statement.setString(7, this.dimensions);
-            statement.setString(8, this.materials);
+            statement.setBoolean(3, this.emailSent);
+            statement.setString(4, this.status);
+            statement.setDate(5, new java.sql.Date(this.createdDate.getTime()));
+            statement.setDouble(6, this.length);
+            statement.setDouble(7, this.width);
+            statement.setBoolean(8, this.specialRequest);
 
-            // Udfør forespørgslen
+
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Inquiry gemt i databasen.");
+            } else {
+                System.out.println("Ingen rækker blev opdateret eller tilføjet.");
             }
 
         } catch (SQLException e) {
@@ -78,36 +83,53 @@ public class Inquiry {
     }
 
 
+    public Double getLength() {
+        return length;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    public Double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
     public int getId() {
         return id;
     }
 
-    public String getDimensions() {
-        return dimensions;
-    }
 
     public String getStatus() {
         return status;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public boolean isEmailSent() {
+        return emailSent;
+    }
+
+    public Customer getCustomer() {
+        return customer;
     }
 
     public Salesman getAssignedSalesman() {
         return assignedSalesman;
     }
 
-    public String getMaterials() {
-        return materials;
+    public Boolean isSpecialRequest() {
+        return specialRequest;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
-    }
-
-    public void setMaterials(String materials) {
-        this.materials = materials;
     }
 
 
@@ -115,24 +137,23 @@ public class Inquiry {
         this.status = status;
     }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setEmailSent(boolean emailSent) {
+        this.emailSent = emailSent;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
     public void setAssignedSalesman(Salesman assignedSalesman) {
         this.assignedSalesman = assignedSalesman;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public boolean isEmailSent() {
-        return emailSent;
-    }
-
-    public boolean isSpecialRequest() {
-        return specialRequest;
+    public void setSpecialRequest(boolean specialRequest) {
+        this.specialRequest = specialRequest;
     }
 }

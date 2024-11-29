@@ -9,7 +9,7 @@
 <body>
 <div class="container mt-5">
     <h1>Forespørgsel på Carport</h1>
-    <form method="POST" action="/submit-request">
+    <form method="POST" action="/submit-inquiry">
         <!-- Bredde -->
         <div class="mb-3">
             <label for="width" class="form-label">Bredde på Carport (cm)</label>
@@ -39,12 +39,14 @@
         </div>
         <!-- Højde -->
         <div class="mb-3">
-            <label for="height" class="form-label">Højde på redskabsrum (cm)</label>
+            <label for="height" class="form-label">Bredde på redskabsrum (cm)</label>
             <select name="height" id="height" class="form-select">
                 <th:block th:each="option : ${heightOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>
                 </th:block>
             </select>
+            <label for="specialRequest">Speciel Forespørgsel:</label>
+            <input type="checkbox" id="specialRequest" name="specialRequest">
         </div>
         <!-- Personlige oplysninger -->
         <div class="mb-3">
@@ -53,33 +55,28 @@
         </div>
         <div class="mb-3">
             <label for="address" class="form-label">Adresse</label>
-            <input type="text" name="address" id="address" class="form-control" required>
+            <input type="text" name="address" id="address" class="form-control">
         </div>
         <div class="mb-3">
             <label for="zipcode" class="form-label">Postnummer</label>
-            <input type="text" name="zipcode" id="zipcode" class="form-control" required>
+            <input type="text" name="zipcode" id="zipcode" class="form-control">
         </div>
         <div class="mb-3">
             <label for="city" class="form-label">By</label>
-            <input type="text" name="city" id="city" class="form-control" required>
+            <input type="text" name="city" id="city" class="form-control">
         </div>
         <div class="mb-3">
             <label for="phone" class="form-label">Telefon</label>
-            <input type="text" name="phone" id="phone" class="form-control" required>
+            <input type="text" name="phone" id="phone" class="form-control">
         </div>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control" required>
+            <input type="email" name="email" id="email" class="form-control">
         </div>
         <!-- Kommentarer -->
         <div class="mb-3">
-            <label for="comments" class="form-label">Kommentarer</label>
-            <textarea name="comments" id="comments" class="form-control"></textarea>
-        </div>
-        <!-- Samtykke -->
-        <div class="mb-3 form-check">
-            <input type="checkbox" name="consent" id="consent" class="form-check-input" required>
-            <label for="consent" class="form-check-label">Jeg accepterer betingelserne</label>
+            <label for="message" class="form-label">Kommentarer</label>
+            <textarea name="message" id="message" class="form-control"></textarea>
         </div>
         <!-- Send-knap -->
         <button type="submit" class="btn btn-primary">Send forespørgsel</button>

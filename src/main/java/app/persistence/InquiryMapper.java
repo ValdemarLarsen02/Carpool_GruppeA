@@ -10,64 +10,61 @@ import java.sql.SQLException;
 
 public class InquiryMapper {
 
-
+    // Mapper værdierne for formparametre til et Inquiry objekt
     public static Inquiry mapFromRequest(Context ctx) {
         Inquiry inquiry = new Inquiry();
 
-        //Mapper værdierne for formparametre til Inquiry objektet
+        // Sætter Inquiry-attributter fra formparametrene
         inquiry.setId(Integer.parseInt(ctx.formParam("id")));
-        inquiry.setDimensions(ctx.formParam("dimensions"));
-        inquiry.setMaterials(ctx.formParam("materials"));
+        inquiry.setLength(Double.parseDouble(ctx.formParam("length")));
+        inquiry.setWidth(Double.parseDouble(ctx.formParam("width")));
         inquiry.setStatus(ctx.formParam("status"));
+        inquiry.setSpecialRequest(Boolean.parseBoolean(ctx.formParam("specialRequest")));
 
-        //Hvis der er et salesman id i formparametrene, tilknyttes en sælger til Inquiry objektet
-        Integer salesmanId = ctx.formParam("salesmanId") != null ? Integer.parseInt(ctx.formParam("salesmanId")) : null;
-        if (salesmanId != null) {
+        // Tilknyt sælger, hvis salesmanId er givet
+        String salesmanIdParam = ctx.formParam("salesmanId");
+        if (salesmanIdParam != null) {
+            int salesmanId = Integer.parseInt(salesmanIdParam);
             Salesman salesman = new Salesman();
             salesman.setId(salesmanId);
             inquiry.setAssignedSalesman(salesman);
-
         }
 
         return inquiry;
     }
 
-
+    // Mapper værdier fra en ResultSet til et Inquiry objekt
     public static Inquiry mapInquiry(ResultSet resultSet) {
-        // Mapper Customer
-        Customer customer = new Customer();
         try {
+            // Mapper Customer
+            Customer customer = new Customer();
             customer.setName(resultSet.getString("customers.name"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             customer.setEmail(resultSet.getString("customers.email"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
-        // Mapper Salesman (kan være null)
-        Salesman assignedSalesman = null;
-        try {
+            // Mapper Salesman (kan være null)
+            Salesman assignedSalesman = null;
             if (resultSet.getObject("salesmen.id") != null) {
                 assignedSalesman = new Salesman();
                 assignedSalesman.setId(resultSet.getInt("salesmen.id"));
                 assignedSalesman.setName(resultSet.getString("salesmen.name"));
                 assignedSalesman.setEmail(resultSet.getString("salesmen.email"));
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
-        // Mapper Inquiry med data fra ResultSet
-        try {
-            return new Inquiry(resultSet.getInt("inquiries.id"), customer, assignedSalesman, resultSet.getBoolean("inquiries.email_sent"), resultSet.getString("inquiries.status"), resultSet.getDate("inquiries.created_date"), resultSet.getString("inquiries.dimensions"), resultSet.getString("inquiries.materials"), resultSet.getBoolean("inquiries.phone_number"));
+            // Returnerer et Inquiry-objekt med data fra ResultSet
+            return new Inquiry(
+                    resultSet.getInt("inquiries.id"),
+                    customer,
+                    assignedSalesman,
+                    resultSet.getBoolean("inquiries.email_sent"),
+                    resultSet.getString("inquiries.status"),
+                    resultSet.getDate("inquiries.created_date"),
+                    resultSet.getDouble("inquiries.length"),
+                    resultSet.getDouble("inquiries.width"),
+                    resultSet.getBoolean("inquiries.special_request")
+            );
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Fejl under mapping af Inquiry fra ResultSet", e);
         }
     }
-
-
 }
-
