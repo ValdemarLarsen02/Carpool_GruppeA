@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Customer Management</h1>
+
+    <!-- Create Profile Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Create Profile</h2>
+        </div>
+        <div class="card-body">
+            <form id="create-customer-form">
+                <div class="mb-3">
+                    <label for="customerName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="customerName" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="customerEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="customerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="customerPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="customerPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Create Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h2>Login</h2>
+        </div>
+        <div class="card-body">
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Profile Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h2>Update Profile</h2>
+        </div>
+        <div class="card-body">
+            <form id="update-profile-form">
+                <div class="mb-3">
+                    <label for="updateName" class="form-label">New Name</label>
+                    <input type="text" class="form-control" id="updateName" placeholder="Enter your new name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="updatePassword" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="updatePassword" placeholder="Enter your new password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="updateEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="updateEmail" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="btn btn-warning w-100">Update Profile</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script>
+    const API_BASE_URL = "http://localhost:8080/api";
+
+    // Create Profile
+    document.getElementById("create-customer-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const customer = {
+            name: document.getElementById("customerName").value,
+            email: document.getElementById("customerEmail").value,
+            password: document.getElementById("customerPassword").value,
+        };
+        const response = await fetch(`${API_BASE_URL}/create-customer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(customer)
+        });
+        alert(await response.text());
+    });
+
+    // Login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const customer = {
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value,
+        };
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(customer)
+        });
+        alert(await response.text());
+    });
+
+    // Update Profile
+    document.getElementById("update-profile-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const customer = {
+            name: document.getElementById("updateName").value,
+            password: document.getElementById("updatePassword").value,
+            email: document.getElementById("updateEmail").value,
+        };
+        const response = await fetch(`${API_BASE_URL}/update-customer`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(customer)
+        });
+        alert(await response.text());
+    });
+</script>
+</body>
+</html>

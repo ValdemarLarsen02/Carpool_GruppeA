@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+</head>
+<body>
+<h1>Order Status</h1>
+<div id="order-status">
+    <button onclick="fetchOrderStatus()">View Order Status</button>
+    <div id="orderStatusResult"></div>
+</div>
+
+<script>
+    const API_BASE_URL = "http://localhost:8080/api";
+
+    async function fetchOrderStatus() {
+        const customerId = 1; // Replace with logged-in customer ID or dynamically retrieve it
+        const response = await fetch(`${API_BASE_URL}/order-status/${customerId}`);
+        if (response.ok) {
+            const orders = await response.json();
+            document.getElementById("orderStatusResult").innerHTML = orders.map(order => `
+                    <div>
+                        <p>Order ID: ${order.id}</p>
+                        <p>Status: ${order.status}</p>
+                        <p>Created Date: ${order.createdDate}</p>
+                        <p>Special Request: ${order.specialRequest || "None"}</p>
+                    </div>
+                `).join("");
+        } else {
+            alert("Failed to fetch order status.");
+        }
+    }
+</script>
+</body>
+</html>
