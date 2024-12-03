@@ -40,10 +40,6 @@ public class Product {
     // ToString-metode til udskrivning
     @Override
     public String toString() {
-        return "Produktnavn: " + name + "\n"
-                + "Pris: " + price + " kr.\n"
-                + "Meterpris: " + meterPrice + " kr./meter\n"
-                + "Link: https://www.johannesfog.dk" + url + "\n"
-                + "Billede: " + imageUrl + "\n";
+        return "Produktnavn: " + name + "\n" + "Pris: " + price + " kr.\n" + "Meterpris: " + meterPrice + " kr./meter\n" + "Link: https://www.johannesfog.dk" + url + "\n" + "Billede: " + imageUrl + "\n";
     }
 }

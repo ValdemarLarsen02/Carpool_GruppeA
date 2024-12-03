@@ -1,6 +1,7 @@
 package app.utils;
 
 import com.google.gson.*;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,24 +15,14 @@ public class Scrapper {
 
     // Metode til at hente søgeresultater
     public List<Product> searchProducts(String searchTerm) {
-        String jsonPayload = "{"
-                + "\"query\": \"" + searchTerm + "\""
-                + "}";
+        String jsonPayload = "{" + "\"query\": \"" + searchTerm + "\"" + "}";
 
         try {
             // Opret en HttpClient
             HttpClient client = HttpClient.newHttpClient();
 
             // Opret en HttpRequest med POST-metoden
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
-                    .header("accept", "application/json")
-                    .header("content-type", "application/json")
-                    .header("api-version", "V3")
-                    .header("origin", "https://www.johannesfog.dk")
-                    .header("user-id", "moJclro7UW")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL)).header("accept", "application/json").header("content-type", "application/json").header("api-version", "V3").header("origin", "https://www.johannesfog.dk").header("user-id", "moJclro7UW").POST(HttpRequest.BodyPublishers.ofString(jsonPayload)).build();
 
             // Send forespørgslen
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

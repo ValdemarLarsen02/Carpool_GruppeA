@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import app.utils.ConfigLoader;
 
 public class DatabaseController {
@@ -21,7 +22,7 @@ public class DatabaseController {
             config.setPassword(ConfigLoader.getProperty("db.password"));
             config.addDataSourceProperty("sslmode", ConfigLoader.getProperty("db.sslmode"));
 
-            // Optimeringsindstillinger og forskellinge settings værdier er i ms.
+            // Optimeringsindstillinger og forskelline settings værdier er i ms.
             config.setMaximumPoolSize(10); // Hvor mange forbindelser kan vi have i vores pool?
             config.setMinimumIdle(2);     // Minimum antal ledige forbindelser
             config.setIdleTimeout(30000); // Timeout for inaktive forbindelser
@@ -52,9 +53,7 @@ public class DatabaseController {
 
     // SELECT query
     public void executeQuery(String query) {
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 System.out.println("Result: " + rs.getString(1)); // Her skal vi evt gøre noget andet end bare at printe.
@@ -66,8 +65,7 @@ public class DatabaseController {
 
     // UPDATE/INSERT/DELETE query
     public void executeUpdate(String query) {
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(query)) {
 
             int affectedRows = stmt.executeUpdate();
             System.out.println("Query executed successfully. Rows affected: " + affectedRows); // her skal vi evt gøre noget andet end bare at printe noget er sket hehe
