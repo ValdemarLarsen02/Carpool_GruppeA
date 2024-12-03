@@ -15,26 +15,41 @@ import java.util.List;
 public class InquiryService {
 
 
-    DatabaseController db = new DatabaseController();
-
-    public List<Inquiry> getInquiriesFromDatabase() {
+    public List<Inquiry> getInquiriesFromDatabase(DatabaseController dbController) {
         List<Inquiry> inquiries = new ArrayList<>();
 
         // Query der henter data fra inquiries, customers og salesmen
         String query = """
-                SELECT 
-                    inquiries.id, inquiries.email_sent, inquiries.status, 
-                    inquiries.created_date, inquiries.length, inquiries.width, inquiries.materials, inquiries.special_request,
-                    customers.name, customers.email,
-                    salesmen.id AS salesman_id, salesmen.name AS salesman_name, salesmen.email AS salesman_email
-                FROM inquiries
-                JOIN customers ON inquiries.customer_id = customers.id
-                LEFT JOIN salesmen ON inquiries.salesman_id = salesmen.id
-                ORDER BY inquiries.id
+                SELECT
+                                         inquiries.id AS inquiry_id,
+                                         inquiries.email_sent,
+                                         inquiries.status,
+                                         inquiries.order_date,
+                                         inquiries.carport_length,
+                                         inquiries.carport_width,
+                                         inquiries.shed_length,
+                                         inquiries.shed_width,
+                                         inquiries.comments,
+                                         customers.id AS customer_id,
+                                         customers.name AS customer_name,
+                                         customers.email AS customer_email,
+                                         customers.phone AS customer_phone,
+                                         customers.address AS customer_address,
+                                         customers.city AS customer_city,
+                                         customers.zipcode AS customer_zipcode,
+                                         salesmen.id AS salesman_id,
+                                         salesmen.name AS salesman_name,
+                                         salesmen.email AS salesman_email
+                                     FROM inquiries
+                                     JOIN customers ON inquiries.customer_id = customers.id
+                                     LEFT JOIN salesmen ON inquiries.salesmen_id = salesmen.id
+                                     ORDER BY inquiries.id;
+                                     
                 """;
 
-        // Udfør query og map resultaterne
-        try (Connection connection = db.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 inquiries.add(InquiryMapper.mapInquiry(resultSet));
@@ -47,26 +62,22 @@ public class InquiryService {
         return inquiries;
     }
 
-    public List<Inquiry> viewInquiries() {
-        return getInquiriesFromDatabase();
-    }
 
-    public void assignInquiry(Inquiry inquiry, Salesman salesman) {
+    /*public void assignInquiry(Inquiry inquiry, Salesman salesman) {
 
-        String checkQuery = "SELECT salesman_id FROM inquiries WHERE id = ?"; // CheckQuery tjekker om en sælger allerede er tildelt
+        String checkQuery = "SELECT salesmen_id FROM inquiries WHERE id = ?";
 
-        String query = "UPDATE inquiries SET salesman_id = ? WHERE id = ?"; // Query til opdatering af tildelt sælger
+        String query = "UPDATE inquiries SET salesmen_id = ? WHERE id = ?";
 
-        try (Connection connection = db.getConnection()) {
+        try (Connection connection = dbController.getConnection()) {
 
             // Tjekker om forespørgslen allerede har en sælger tilknyttet
             try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
                 checkStatement.setInt(1, inquiry.getId());
                 try (ResultSet resultSet = checkStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        int existingSalesmanId = resultSet.getInt("salesman_id");
+                        int existingSalesmanId = resultSet.getInt("salesmen_id");
                         if (existingSalesmanId != 0) {
-
                             System.out.println("Forespørgsel " + inquiry.getId() + " har allerede en sælger tildelt.");
                             return;
                         }
@@ -96,70 +107,71 @@ public class InquiryService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
-    public void updateInquiryInDatabase(Inquiry inquiry) {
-        StringBuilder queryBuilder = new StringBuilder("UPDATE inquiries SET "); // Initialiser SQL-query
-        List<Object> parameters = new ArrayList<>(); // Liste til dynamiske parametre
+    /*public void updateInquiryInDatabase(Inquiry inquiry) {
+        StringBuilder queryBuilder = new StringBuilder("UPDATE inquiries SET ");
+        List<Object> parameters = new ArrayList<>();
 
-
-        // Tilføjer salesman_id til query, hvis en sælger er tildelt
-        if (inquiry.getAssignedSalesman() != null) {
-            queryBuilder.append("salesman_id = ?, ");
-            parameters.add(inquiry.getAssignedSalesman().getId());
+        if (inquiry.getSalesmanId() != null) {
+            queryBuilder.append("salesmen_id = ?, ");
+            parameters.add(inquiry.getSalesmanId());
         }
 
-        // Tilføjer status til query, hvis en status findes
         if (inquiry.getStatus() != null) {
             queryBuilder.append("status = ?, ");
             parameters.add(inquiry.getStatus());
         }
 
-        // Tilføjer special_request til query, hvis det findes
-        if (inquiry.isSpecialRequest() != null) {
-            queryBuilder.append("special_request = ?, ");
-            parameters.add(inquiry.isSpecialRequest());
+        if (inquiry.getComments() != null) {
+            queryBuilder.append("comments = ?, ");
+            parameters.add(inquiry.getComments());
         }
 
-
-        // Tilføjer width til query, hvis det findes
-        if (inquiry.getWidth() != null) {
-            queryBuilder.append("width = ?, ");
-            parameters.add(inquiry.getWidth());
+        if (inquiry.getCarportLength() != null) {
+            queryBuilder.append("carport_length = ?, ");
+            parameters.add(inquiry.getCarportLength());
         }
 
-        // Tilføjer length til query, hvis det findes
-        if (inquiry.getLength() != null) {
-            queryBuilder.append("length = ?, ");
-            parameters.add(inquiry.getLength());
+        if (inquiry.getCarportWidth() != null) {
+            queryBuilder.append("carport_width = ?, ");
+            parameters.add(inquiry.getCarportWidth());
         }
 
-        // Hvis der ikke er parametre, skal metoden afsluttes
+        if (inquiry.getShedLength() != null) {
+            queryBuilder.append("shed_length = ?, ");
+            parameters.add(inquiry.getShedLength());
+        }
+
+        if (inquiry.getShedWidth() != null) {
+            queryBuilder.append("shed_width = ?, ");
+            parameters.add(inquiry.getShedWidth());
+        }
+
+        if (inquiry.isEmailSent() != null) {
+            queryBuilder.append("email_sent = ?, ");
+            parameters.add(inquiry.isEmailSent());
+        }
+
         if (parameters.isEmpty()) {
             return;
         }
 
-        // Fjerner det sidste komma og mellemrum fra query
         queryBuilder.setLength(queryBuilder.length() - 2);
-
-        // Tilføjer WHERE-betingelse for at opdatere det korrekte inquiry
         queryBuilder.append(" WHERE id = ?");
         parameters.add(inquiry.getId());
 
-        try (Connection connection = db.getConnection();
+        try (Connection connection = dbController.getConnection();
              PreparedStatement statement = connection.prepareStatement(queryBuilder.toString())) {
 
-            // Binder parametre til den dynamiske query
             for (int i = 0; i < parameters.size(); i++) {
                 statement.setObject(i + 1, parameters.get(i));
             }
 
-            // Udfør opdateringen
             statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
-

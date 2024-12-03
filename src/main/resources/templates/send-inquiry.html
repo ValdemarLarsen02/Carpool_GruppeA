@@ -12,18 +12,18 @@
     <form method="POST" action="/submit-inquiry">
         <!-- Bredde -->
         <div class="mb-3">
-            <label for="width" class="form-label">Bredde på Carport (cm)</label>
-            <select name="width" id="width" class="form-select">
-                <th:block th:each="option : ${widthOptions}">
+            <label for="carportWidth" class="form-label">Bredde på Carport (cm)</label>
+            <select name="carportWidth" id="carportWidth" class="form-select">
+                <th:block th:each="option : ${carportWidthOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>
                 </th:block>
             </select>
         </div>
         <!-- Længde -->
         <div class="mb-3">
-            <label for="length" class="form-label">Længde på Carport (cm)</label>
-            <select name="length" id="length" class="form-select">
-                <th:block th:each="option : ${lengthOptions}">
+            <label for="carportLength" class="form-label">Længde på Carport (cm)</label>
+            <select name="carportLength" id="carportLength" class="form-select">
+                <th:block th:each="option : ${carportLengthOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>
                 </th:block>
             </select>
@@ -32,7 +32,8 @@
         <div class="mb-3">
             <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
             <select name="shedLength" id="shedLength" class="form-select">
-                <th:block th:each="option : ${shedOptions}">
+                <option value="">Uden redskabsskur</option>
+                <th:block th:each="option : ${shedLengthOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>
                 </th:block>
             </select>
@@ -41,13 +42,13 @@
         <div class="mb-3">
             <label for="height" class="form-label">Bredde på redskabsrum (cm)</label>
             <select name="height" id="height" class="form-select">
-                <th:block th:each="option : ${heightOptions}">
+                <option value="">Uden redskabsskur</option>
+                <th:block th:each="option : ${shedWidthOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>
                 </th:block>
             </select>
-            <label for="specialRequest">Speciel Forespørgsel:</label>
-            <input type="checkbox" id="specialRequest" name="specialRequest">
         </div>
+
         <!-- Personlige oplysninger -->
         <div class="mb-3">
             <label for="name" class="form-label">Navn</label>

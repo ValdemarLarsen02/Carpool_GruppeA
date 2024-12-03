@@ -12,9 +12,6 @@ import app.utils.Scrapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,17 +20,17 @@ public class Main {
             config.staticFiles.add("/public"); // Til CSS og JS
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-        }).start(7070);
+        }).start(8080);
+
+        InquiryService inquiryService = new InquiryService();
+        DatabaseController dbController = new DatabaseController();
 
         // Routing
         app.get("/", ctx -> ctx.render("index.html"));
         app.get("/test", ctx -> ctx.render("payment.html"));
 
-        InquiryController inquiryController = new InquiryController(app);
+        InquiryController inquiryController = new InquiryController(inquiryService);
         inquiryController.registerRoutes(app);
     }
-
-
-
 
 }

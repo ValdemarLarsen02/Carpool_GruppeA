@@ -10,61 +10,44 @@ import java.sql.SQLException;
 
 public class InquiryMapper {
 
-    // Mapper værdierne for formparametre til et Inquiry objekt
-    public static Inquiry mapFromRequest(Context ctx) {
-        Inquiry inquiry = new Inquiry();
-
-        // Sætter Inquiry-attributter fra formparametrene
-        inquiry.setId(Integer.parseInt(ctx.formParam("id")));
-        inquiry.setLength(Double.parseDouble(ctx.formParam("length")));
-        inquiry.setWidth(Double.parseDouble(ctx.formParam("width")));
-        inquiry.setStatus(ctx.formParam("status"));
-        inquiry.setSpecialRequest(Boolean.parseBoolean(ctx.formParam("specialRequest")));
-
-        // Tilknyt sælger, hvis salesmanId er givet
-        String salesmanIdParam = ctx.formParam("salesmanId");
-        if (salesmanIdParam != null) {
-            int salesmanId = Integer.parseInt(salesmanIdParam);
-            Salesman salesman = new Salesman();
-            salesman.setId(salesmanId);
-            inquiry.setAssignedSalesman(salesman);
-        }
-
-        return inquiry;
-    }
-
     // Mapper værdier fra en ResultSet til et Inquiry objekt
-    public static Inquiry mapInquiry(ResultSet resultSet) {
+    public static Inquiry mapInquiry(ResultSet resultSet) throws SQLException {
         try {
-            // Mapper Customer
-            Customer customer = new Customer();
-            customer.setName(resultSet.getString("customers.name"));
-            customer.setEmail(resultSet.getString("customers.email"));
 
-            // Mapper Salesman (kan være null)
-            Salesman assignedSalesman = null;
-            if (resultSet.getObject("salesmen.id") != null) {
-                assignedSalesman = new Salesman();
-                assignedSalesman.setId(resultSet.getInt("salesmen.id"));
-                assignedSalesman.setName(resultSet.getString("salesmen.name"));
-                assignedSalesman.setEmail(resultSet.getString("salesmen.email"));
-            }
+            // Hent værdier fra ResultSet og map dem til Inquiry-objektet
+            int inquiryId = resultSet.getInt("inquiry_id");
+            int customerId = resultSet.getInt("customer_id");
+            Integer salesmanId = resultSet.getObject("salesman_id") != null ? resultSet.getInt("salesmen_id") : null;
+            boolean emailSent = resultSet.getBoolean("email_sent");
+            String status = resultSet.getString("status");
+            java.sql.Date orderDate = resultSet.getDate("order_date");
+            double carportLength = resultSet.getDouble("carport_length");
+            double carportWidth = resultSet.getDouble("carport_width");
+            Double shedLength = resultSet.getObject("shed_length") != null ? resultSet.getDouble("shed_length") : null;
+            Double shedWidth = resultSet.getObject("shed_width") != null ? resultSet.getDouble("shed_width") : null;
+            String comments = resultSet.getString("comments");
 
-            // Returnerer et Inquiry-objekt med data fra ResultSet
-            return new Inquiry(
-                    resultSet.getInt("inquiries.id"),
-                    customer,
-                    assignedSalesman,
-                    resultSet.getBoolean("inquiries.email_sent"),
-                    resultSet.getString("inquiries.status"),
-                    resultSet.getDate("inquiries.created_date"),
-                    resultSet.getDouble("inquiries.length"),
-                    resultSet.getDouble("inquiries.width"),
-                    resultSet.getBoolean("inquiries.special_request")
+
+            // Opret et nyt Inquiry objekt og sæt værdierne
+            Inquiry inquiry = new Inquiry(
+                    inquiryId,
+                    customerId,
+                    salesmanId,
+                    emailSent,
+                    status,
+                    orderDate,
+                    carportLength,
+                    carportWidth,
+                    shedLength,
+                    shedWidth,
+                    comments
             );
 
+            return inquiry;
         } catch (SQLException e) {
-            throw new RuntimeException("Fejl under mapping af Inquiry fra ResultSet", e);
+            // Log eller håndter fejlen på en mere detaljeret måde
+            System.err.println("Fejl ved mapping af Inquiry: " + e.getMessage());
+            throw e;
         }
     }
 }

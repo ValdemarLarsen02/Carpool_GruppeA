@@ -57,9 +57,10 @@ public class EmailService {
 
         // Inkluder forespørgselsdetaljer
         content.append("<h2>Carport Forespørgsel</h2>");
-        content.append("<p><strong>Længde:</strong> ").append(inquiry.getLength()).append(" m</p>");
-        content.append("<p><strong>Bredde:</strong> ").append(inquiry.getWidth()).append(" m</p>");
-        content.append("<p><strong>Specifik Anmodning:</strong> ").append(inquiry.isSpecialRequest() ? "Ja" : "Nej").append("</p>");
+        content.append("<p><strong>Carport Længde:</strong> ").append(inquiry.getCarportLength()).append(" m</p>");
+        content.append("<p><strong>Carport Bredde:</strong> ").append(inquiry.getCarportWidth()).append(" m</p>");
+        content.append("<p><strong>Redskabsskur længde:</strong> ").append(inquiry.getShedLength()).append("m</p>");
+        content.append("<p><strong> Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" m</p>");
 
         return content.toString();
     }
