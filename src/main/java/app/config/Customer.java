@@ -18,6 +18,7 @@ public class Customer {
     private int zipcode;
     private Customer customer;
 
+    //Konstruktør
     public Customer(String name, String email, int phoneNumber, String address, String city, int zipcode) {
         this.name = name;
         this.email = email;
@@ -60,16 +61,6 @@ public class Customer {
         return this.id;
     }
 
-
-    public void submitInquiry(Inquiry inquiry) {
-
-    }
-
-    public List<Carport> viewCarports(Map<String, String> filters) {
-
-        return null;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -98,8 +89,6 @@ public class Customer {
         return phoneNumber;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+
 }
 

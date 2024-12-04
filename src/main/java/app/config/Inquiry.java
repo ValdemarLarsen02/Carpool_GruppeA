@@ -11,8 +11,9 @@ public class Inquiry {
 
     private int id;
     private int customerId;
+    private boolean salesmanAssigned;
     private Integer salesmanId;
-    private Boolean emailSent; // Kan være null
+    private Boolean emailSent;
     private String status;
     private Date orderDate;
     private Double carportLength;
@@ -22,11 +23,11 @@ public class Inquiry {
     private String comments;
     private Customer customer;
 
-    // Standardkonstruktor
+
     public Inquiry() {
     }
 
-    // Parametriseret konstruktor
+    // Konstruktør
     public Inquiry(int id, int customerId, Integer salesmanId, Boolean emailSent, String status, Date orderDate,
                    Double carportLength, Double carportWidth, Double shedLength, Double shedWidth, String comments) {
         this.id = id;
@@ -112,12 +113,7 @@ public class Inquiry {
                 statement.setNull(10, java.sql.Types.VARCHAR);
             }
 
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Forespørgsel gemt i databasen.");
-            } else {
-                System.out.println("Ingen rækker blev opdateret eller tilføjet.");
-            }
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,41 +130,16 @@ public class Inquiry {
         this.id = id;
     }
 
-    public int getCustomerId() {
-        return customerId;
-    }
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
-    public Integer getSalesmanId() {
-        return salesmanId;
-    }
-
-    public void setSalesmanId(Integer salesmanId) {
-        this.salesmanId = salesmanId;
-    }
-
-    public Boolean isEmailSent() {
-        return emailSent;
-    }
-
-    public void setEmailSent(Boolean emailSent) {
-        this.emailSent = emailSent;
-    }
-
-    public String getStatus() {
-        return status;
-    }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public Date getOrderDate() {
-        return orderDate;
-    }
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
@@ -206,19 +177,10 @@ public class Inquiry {
         this.shedWidth = shedWidth;
     }
 
-    public String getComments() {
-        return comments;
-    }
 
     public void setComments(String comments) {
         this.comments = comments;
     }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
 }
+
+

@@ -1,15 +1,14 @@
 package app.controllers;
 
 import app.Services.InquiryService;
+import app.Services.SalesmanService;
 import app.config.Customer;
 import app.config.Inquiry;
-import app.persistence.InquiryMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.config.Salesman;
 import app.Services.EmailService;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -19,9 +18,12 @@ public class InquiryController {
     private InquiryService inquiryService;
     private EmailService emailService;
     private DatabaseController dbController;
+    private SalesmanService salesmanService;
 
-    public InquiryController(InquiryService inquiryService) {
+    //Konstruktør
+    public InquiryController(InquiryService inquiryService, SalesmanService salesmanService) {
         this.dbController = new DatabaseController();
+        this.salesmanService = salesmanService;
         this.inquiryService = inquiryService;
         dbController.initialize();
     }
@@ -33,16 +35,52 @@ public class InquiryController {
                 "shedWidthOptions", generateOptions(210, 720, 30),
                 "shedLengthOptions", generateOptions(210, 720, 30)
         )));
-        app.post("/submit-inquiry", this::submitInquiry);
-        app.get("/inquiries", this::showInquiries);
-        app.get("/sales-portal", ctx -> ctx.render("sales-portal.html"));
 
+        app.post("/submit-inquiry", this::submitInquiry);
+        app.get("/unassigned-inquiries", this::showUnassignedInquiries);
+        app.get("/sales-portal", ctx -> ctx.render("sales-portal.html"));
+        app.post("/assign-salesman", this::assignSalesmanToInquiry);
+        app.get("/inquiries", this::showAllInquiries);
     }
 
-    public void showInquiries(Context ctx) {
+    public void showAllInquiries(Context ctx) {
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
-        ctx.render("inquiries", Map.of("inquiries", inquiries));
 
+        ctx.render("inquiries.html", Map.of("inquiries", inquiries));
+    }
+
+    public List<Salesman> showSalesmenDropdown() {
+        List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
+
+        return salesmen;
+    }
+
+    public void assignSalesmanToInquiry(Context ctx) {
+
+        showSalesmenDropdown();
+
+        int inquiryID = Integer.parseInt(ctx.formParam("inquiryId"));
+        int salesmanID = Integer.parseInt(ctx.formParam("salesmanId"));
+
+        InquiryService inquiryService = new InquiryService();
+        inquiryService.assignSalesmanToInquiry(inquiryID, salesmanID, dbController);
+
+        ctx.redirect("/unassigned-inquiries");
+    }
+
+
+    public void showUnassignedInquiries(Context ctx) {
+        List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
+
+        // Filtrér inquiries, der ikke har en sælger
+        List<Inquiry> unassignedInquiries = inquiries.stream()
+                .filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId(), dbController))
+                .toList();
+
+        List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
+
+        // Render kun de unassigned inquiries
+        ctx.render("unassigned-inquiries.html", Map.of("inquiries", unassignedInquiries, "salesmen", salesmen));
     }
 
     public void submitInquiry(Context ctx) {

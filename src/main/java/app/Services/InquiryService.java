@@ -47,9 +47,7 @@ public class InquiryService {
                                      
                 """;
 
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 inquiries.add(InquiryMapper.mapInquiry(resultSet));
@@ -62,52 +60,67 @@ public class InquiryService {
         return inquiries;
     }
 
+    public boolean hasSalesmanAssigned(int inquiryID, DatabaseController dbController) {
+        String query = "SELECT salesmen_id FROM inquiries WHERE id = ?";
 
-    /*public void assignInquiry(Inquiry inquiry, Salesman salesman) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, inquiryID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("salesmen_id") != 0;
+                }
+            }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+    public void assignSalesmanToInquiry(int inquiryID, int salesmanID, DatabaseController dbController) {
         String checkQuery = "SELECT salesmen_id FROM inquiries WHERE id = ?";
-
-        String query = "UPDATE inquiries SET salesmen_id = ? WHERE id = ?";
+        String updateQuery = "UPDATE inquiries SET salesmen_id = ? WHERE id = ?";
 
         try (Connection connection = dbController.getConnection()) {
 
-            // Tjekker om forespørgslen allerede har en sælger tilknyttet
+            // Tjek om forespørgslen allerede har en sælger
             try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
-                checkStatement.setInt(1, inquiry.getId());
+                checkStatement.setInt(1, inquiryID);
+
                 try (ResultSet resultSet = checkStatement.executeQuery()) {
                     if (resultSet.next()) {
                         int existingSalesmanId = resultSet.getInt("salesmen_id");
-                        if (existingSalesmanId != 0) {
-                            System.out.println("Forespørgsel " + inquiry.getId() + " har allerede en sælger tildelt.");
+                        if (existingSalesmanId != 0) { // En sælger er allerede tildelt
+                            System.out.println("Forespørgsel " + inquiryID + " har allerede sælger " + existingSalesmanId + " tildelt.");
                             return;
                         }
+                    } else {
+                        System.out.println("Forespørgsel " + inquiryID + " blev ikke fundet.");
+                        return;
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return;
                 }
             }
 
-            // Opdaterer forespørgslen med den nye sælger
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, salesman.getId());
-                statement.setInt(2, inquiry.getId());
+            // Tildel sælgeren
+            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                updateStatement.setInt(1, salesmanID);
+                updateStatement.setInt(2, inquiryID);
 
-                int rowsAffected = statement.executeUpdate();
-
+                int rowsAffected = updateStatement.executeUpdate();
                 if (rowsAffected > 0) {
-                    System.out.println("Forespørgsel " + inquiry.getId() + " tildelt " + salesman.getName());
+                    System.out.println("Forespørgsel " + inquiryID + " er nu tildelt sælger " + salesmanID + ".");
                 } else {
-                    System.out.println("Der findes ikke en forespørgsel med ID'et " + inquiry.getId());
+                    System.out.println("Opdateringen mislykkedes. Ingen rækker blev ændret.");
                 }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            throw new RuntimeException("Fejl ved tildeling af sælger: " + e.getMessage(), e);
         }
-    }*/
+    }
 
     /*public void updateInquiryInDatabase(Inquiry inquiry) {
         StringBuilder queryBuilder = new StringBuilder("UPDATE inquiries SET ");

@@ -17,7 +17,7 @@ public class InquiryMapper {
             // Hent værdier fra ResultSet og map dem til Inquiry-objektet
             int inquiryId = resultSet.getInt("inquiry_id");
             int customerId = resultSet.getInt("customer_id");
-            Integer salesmanId = resultSet.getObject("salesman_id") != null ? resultSet.getInt("salesmen_id") : null;
+            Integer salesmanId = resultSet.getObject("salesman_id") != null ? resultSet.getInt("salesman_id") : null;
             boolean emailSent = resultSet.getBoolean("email_sent");
             String status = resultSet.getString("status");
             java.sql.Date orderDate = resultSet.getDate("order_date");
@@ -29,19 +29,7 @@ public class InquiryMapper {
 
 
             // Opret et nyt Inquiry objekt og sæt værdierne
-            Inquiry inquiry = new Inquiry(
-                    inquiryId,
-                    customerId,
-                    salesmanId,
-                    emailSent,
-                    status,
-                    orderDate,
-                    carportLength,
-                    carportWidth,
-                    shedLength,
-                    shedWidth,
-                    comments
-            );
+            Inquiry inquiry = new Inquiry(inquiryId, customerId, salesmanId, emailSent, status, orderDate, carportLength, carportWidth, shedLength, shedWidth, comments);
 
             return inquiry;
         } catch (SQLException e) {

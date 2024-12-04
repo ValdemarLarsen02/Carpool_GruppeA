@@ -7,14 +7,13 @@ public class Salesman {
     private Integer id;
     private String email;
 
-
-    public String generate3DModel(Inquiry inquiry) {
-        return null;
+    //Konstruktør
+    public Salesman(Integer id, String name, String email) {
+        this.name = name;
+        this.id = id;
+        this.email = email;
     }
 
-    public boolean sendOfferEmail(Customer customer, String offer) {
-        return false;
-    }
 
     public String getName() {
         return name;

@@ -5,6 +5,7 @@ public class PriceResult {
     private double totalCost;
     private double coveragePercentage;
 
+    //Konstruktør
     public PriceResult(double suggestedPrice, double totalCost, double coveragePercentage) {
         this.suggestedPrice = suggestedPrice;
         this.totalCost = totalCost;
