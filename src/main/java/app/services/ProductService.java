@@ -101,4 +101,24 @@ public class ProductService {
             System.err.println("Fejl ved opdatering af produkt: " + e.getMessage());
         }
     }
+
+
+    /**
+     * Sletter et produkt fra databasen baseret på dets ID.
+     *
+     * @param productId ID for det produkt, der skal slettes
+     */
+    public void deleteProductById(int productId) {
+        String query = "DELETE FROM Product WHERE id = ?";
+        try (Connection conn = dbController.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, productId);
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Antal slettede rækker: " + rowsAffected);
+        } catch (SQLException e) {
+            System.err.println("Fejl ved sletning af produkt: " + e.getMessage());
+        }
+    }
+
 }

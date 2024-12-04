@@ -26,8 +26,7 @@ public class Main {
 
 
         //Db loader:
-        DatabaseController dbController = new DatabaseController();
-        dbController.initialize();
+
 
         // Opsætning af routes
         StripePayment.registerRoutes(app);

@@ -25,6 +25,7 @@ public class AdminController {
         app.post("/admin/product/update", ctx -> controller.updateProduct(ctx));
         app.get("/admin/products", ctx -> controller.getAllProducts(ctx));
         app.get("/admin/scrap", ctx -> controller.scrapExternalProducts(ctx));
+        app.post("/admin/product/delete", ctx -> controller.deleteProduct(ctx));
 
     }
 
@@ -51,6 +52,13 @@ public class AdminController {
     private void getAllProducts(Context ctx) {
         List<Product> products = productService.getAllProducts();
         ctx.json(products);
+    }
+
+    private void deleteProduct(Context ctx) {
+        // Hent id fra formularen
+        String idParam = ctx.formParam("id");
+        productService.deleteProductById(Integer.parseInt(idParam));
+        ctx.redirect("/admin");
     }
 
     private void scrapExternalProducts(Context ctx) {
