@@ -1,5 +1,6 @@
 package app.utils;
 
+import app.models.Product;
 import com.google.gson.*;
 import java.net.URI;
 import java.net.http.HttpClient;
