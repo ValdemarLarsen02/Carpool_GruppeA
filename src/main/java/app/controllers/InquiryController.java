@@ -8,6 +8,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.config.Salesman;
 import app.Services.EmailService;
+import app.utils.DropdownOptions;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,15 @@ public class InquiryController {
         dbController.initialize();
     }
 
+    //Registrerer javalin ruter
     public void registerRoutes(Javalin app) {
+
+        //Get rute der generer options til en forespørgsel, samt renderer forespørgselssiden
         app.get("/send-inquiry", ctx -> ctx.render("send-inquiry.html", Map.of(
-                "carportWidthOptions", generateOptions(240, 600, 30),
-                "carportLengthOptions", generateOptions(240, 780, 30),
-                "shedWidthOptions", generateOptions(210, 720, 30),
-                "shedLengthOptions", generateOptions(210, 720, 30)
+                "carportWidthOptions", DropdownOptions.generateOptions(240, 600, 30),
+                "carportLengthOptions", DropdownOptions.generateOptions(240, 780, 30),
+                "shedWidthOptions", DropdownOptions.generateOptions(210, 720, 30),
+                "shedLengthOptions", DropdownOptions.generateOptions(210, 720, 30)
         )));
 
         app.post("/submit-inquiry", this::submitInquiry);
@@ -49,12 +53,14 @@ public class InquiryController {
         ctx.render("inquiries.html", Map.of("inquiries", inquiries));
     }
 
+    //Viser alle forespørgsler
     public List<Salesman> showSalesmenDropdown() {
         List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
 
         return salesmen;
     }
 
+    //Tildel sælger til en forespørgsel
     public void assignSalesmanToInquiry(Context ctx) {
 
         showSalesmenDropdown();
@@ -69,6 +75,7 @@ public class InquiryController {
     }
 
 
+    //Viser alle forespørgsler uden en sælger tilknyttet
     public void showUnassignedInquiries(Context ctx) {
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
 
@@ -83,7 +90,9 @@ public class InquiryController {
         ctx.render("unassigned-inquiries.html", Map.of("inquiries", unassignedInquiries, "salesmen", salesmen));
     }
 
+    //Indsend en ny forespørgsel
     public void submitInquiry(Context ctx) {
+        //Henter data fra formularen
         String name = ctx.formParam("name");
         String email = ctx.formParam("email");
         int phone = Integer.parseInt(ctx.formParam("phone"));
@@ -92,11 +101,13 @@ public class InquiryController {
         int zipcode = Integer.parseInt(ctx.formParam("zipcode"));
         String comments = ctx.formParam("comments");
 
+        //Validerer de påkrævede felter
         if (name == null || name.isBlank() || email == null || email.isBlank()) {
             ctx.status(400).result("Navn og email skal udfyldes");
             return;
         }
 
+        //Henter valgene fra formularen
         Double carportLength = parseFormParamAsDouble(ctx.formParam("carportLength"), "Carport længde");
         Double carportWidth = parseFormParamAsDouble(ctx.formParam("carportWidth"), "Carport bredde");
         Double shedLength = parseFormParamAsDouble(ctx.formParam("shedLength"), "Skurlængde");
@@ -121,6 +132,12 @@ public class InquiryController {
             inquiry.setOrderDate(new java.util.Date());
 
             inquiry.saveToDatabase(dbController);
+
+            // Send email
+            EmailService emailService = new EmailService();
+            emailService.sendCustomerInquiryEmail(customer, inquiry);
+
+            emailService.saveEmailsToDatabase(inquiry, customer, dbController);
 
             // Render bekræftelsessiden
             ctx.render("inquiry-confirmation.html", Map.of(
@@ -154,6 +171,7 @@ public class InquiryController {
         }
     }*/
 
+    //Parser formularparametre som Double
     private static Double parseFormParamAsDouble(String param, String fieldName) {
         try {
             return param != null && !param.isEmpty() ? Double.parseDouble(param) : null; // Returner null hvis param er tom
@@ -162,11 +180,4 @@ public class InquiryController {
         }
     }
 
-
-    private static String[] generateOptions(int start, int end, int step) {
-        return IntStream.rangeClosed(start, end)
-                .filter(i -> i % step == 0)
-                .mapToObj(String::valueOf)
-                .toArray(String[]::new);
-    }
 }

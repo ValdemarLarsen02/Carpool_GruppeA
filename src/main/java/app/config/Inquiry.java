@@ -181,6 +181,55 @@ public class Inquiry {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+    public boolean isSalesmanAssigned() {
+        return salesmanAssigned;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public Integer getSalesmanId() {
+        return salesmanId;
+    }
+
+    public Boolean getEmailSent() {
+        return emailSent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setSalesmanAssigned(boolean salesmanAssigned) {
+        this.salesmanAssigned = salesmanAssigned;
+    }
+
+    public void setSalesmanId(Integer salesmanId) {
+        this.salesmanId = salesmanId;
+    }
+
+    public void setEmailSent(Boolean emailSent) {
+        this.emailSent = emailSent;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 }
+
 
 

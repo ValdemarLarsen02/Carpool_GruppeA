@@ -1,22 +1,20 @@
 package app.Services;
 
 import app.config.Customer;
+import app.config.Email;
 import app.config.Inquiry;
 import app.controllers.DatabaseController;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class EmailService {
 
-    public EmailService(DatabaseController dbController) {
-        dbController.initialize();
-    }
 
     private static final String SMTP_HOST = "smtp.mailersend.net";
     private static final String SMTP_PORT = "587";
@@ -109,7 +107,6 @@ public class EmailService {
 
     public void saveEmailsToDatabase(Inquiry inquiry, Customer customer, DatabaseController dbController) {
 
-        // SQL til indsættelse af e-mailoplysninger
         String query = "INSERT INTO sent_emails (recipient_email, subject, content) VALUES (?, ?, ?)";
 
         try (Connection connection = dbController.getConnection();
@@ -129,5 +126,30 @@ public class EmailService {
         } catch (SQLException e) {
             System.err.println("Fejl ved gemning af e-mail: " + e.getMessage());
         }
+
+    }
+
+    public List<Email> showAllSentEmails(DatabaseController dbController) {
+        List<Email> sentEmails = new ArrayList<>();
+
+        String query = "SELECT * FROM sent_emails";
+
+        try (Connection connection = dbController.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                String recipient = resultSet.getString("recipient_email");
+                String subject = resultSet.getString("subject");
+                String content = resultSet.getString("content");
+
+                Email email = new Email(recipient, subject, content);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sentEmails;
+
+
     }
 }

@@ -33,7 +33,6 @@ public class InquiryMapper {
 
             return inquiry;
         } catch (SQLException e) {
-            // Log eller håndter fejlen på en mere detaljeret måde
             System.err.println("Fejl ved mapping af Inquiry: " + e.getMessage());
             throw e;
         }

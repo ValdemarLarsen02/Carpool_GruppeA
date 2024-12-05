@@ -11,6 +11,7 @@ import java.util.List;
 
 public class SalesmanService {
 
+    //Henter alle sælgere fra databasen
     public List<Salesman> getAllSalesmen(DatabaseController dbController) {
         List<Salesman> salesmen = new ArrayList<>();
 

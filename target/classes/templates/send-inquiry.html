@@ -28,7 +28,7 @@
                 </th:block>
             </select>
         </div>
-        <!-- Redskabsrum -->
+        <!-- Redskabsskur længde -->
         <div class="mb-3">
             <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
             <select name="shedLength" id="shedLength" class="form-select">
@@ -38,10 +38,10 @@
                 </th:block>
             </select>
         </div>
-        <!-- Højde -->
+        <!-- Redskabsskur bredde -->
         <div class="mb-3">
-            <label for="height" class="form-label">Bredde på redskabsrum (cm)</label>
-            <select name="height" id="height" class="form-select">
+            <label for="shedWidth" class="form-label">Bredde på redskabsrum (cm)</label>
+            <select name="shedWidth" id="shedWidth" class="form-select">
                 <option value="">Uden redskabsskur</option>
                 <th:block th:each="option : ${shedWidthOptions}">
                     <option th:value="${option}" th:text="${option} + ' cm'"></option>

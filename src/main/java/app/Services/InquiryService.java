@@ -15,6 +15,7 @@ import java.util.List;
 public class InquiryService {
 
 
+    //Henter inquiries fra databasen, og retunere dem i en liste
     public List<Inquiry> getInquiriesFromDatabase(DatabaseController dbController) {
         List<Inquiry> inquiries = new ArrayList<>();
 
@@ -60,6 +61,7 @@ public class InquiryService {
         return inquiries;
     }
 
+    //Tjekker om en inquiry har en sælger tilknyttet, retunere en boolean værdi
     public boolean hasSalesmanAssigned(int inquiryID, DatabaseController dbController) {
         String query = "SELECT salesmen_id FROM inquiries WHERE id = ?";
 
@@ -79,6 +81,7 @@ public class InquiryService {
     }
 
 
+    //Tilknytter en sælger til en inquiry
     public void assignSalesmanToInquiry(int inquiryID, int salesmanID, DatabaseController dbController) {
         String checkQuery = "SELECT salesmen_id FROM inquiries WHERE id = ?";
         String updateQuery = "UPDATE inquiries SET salesmen_id = ? WHERE id = ?";
