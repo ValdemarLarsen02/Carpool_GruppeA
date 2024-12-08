@@ -1,13 +1,5 @@
 package app.config;
 
-import app.controllers.DatabaseController;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-
 public class Customer {
     private String name;
     private String email;
@@ -28,46 +20,24 @@ public class Customer {
         this.zipcode = zipcode;
     }
 
-    //Test metode
-    public int saveToDatabase(DatabaseController dbController) {
-        String insertQuery = """
-                INSERT INTO customers (name, email, phone, address, city, zipcode)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """;
+    public Customer() {
 
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement statement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, this.name);
-            statement.setString(2, this.email);
-            statement.setInt(3, this.phoneNumber);
-            statement.setString(4, this.address);
-            statement.setString(5, this.city);
-            statement.setInt(6, this.zipcode);
-
-            statement.executeUpdate();
-
-            var keys = statement.getGeneratedKeys();
-            if (keys.next()) {
-                this.id = keys.getInt(1); // Hent det genererede id
-            }
-
-            System.out.println("Kunde gemt i databasen med ID: " + this.id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Kunne ikke gemme kunden i databasen.");
-        }
-
-        return this.id;
     }
 
     public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Navn kan ikke være tomt.");
+        }
         this.name = name;
     }
 
     public void setEmail(String email) {
+        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Ugyldigt email-format.");
+        }
         this.email = email;
     }
+
 
     public int getId() {
         return id;
@@ -89,6 +59,41 @@ public class Customer {
         return phoneNumber;
     }
 
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setZipcode(int zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public int getZipcode() {
+        return zipcode;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
 
 }
 

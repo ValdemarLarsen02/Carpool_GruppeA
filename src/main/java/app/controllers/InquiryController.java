@@ -4,6 +4,8 @@ import app.Services.InquiryService;
 import app.Services.SalesmanService;
 import app.config.Customer;
 import app.config.Inquiry;
+import app.persistence.InquiryMapper;
+import app.utils.RequestParser;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.config.Salesman;
@@ -20,31 +22,32 @@ public class InquiryController {
     private EmailService emailService;
     private DatabaseController dbController;
     private SalesmanService salesmanService;
+    private InquiryMapper inquiryMapper;
+    private RequestParser requestParser;
 
     //Konstruktør
-    public InquiryController(InquiryService inquiryService, SalesmanService salesmanService) {
-        this.dbController = new DatabaseController();
+    public InquiryController(InquiryService inquiryService, SalesmanService salesmanService, RequestParser requestParser, EmailService emailService, DatabaseController dbController) {
         this.salesmanService = salesmanService;
         this.inquiryService = inquiryService;
-        dbController.initialize();
+        this.requestParser = requestParser;
+        this.emailService = emailService;
+        this.dbController = dbController;
+
     }
 
     //Registrerer javalin ruter
     public void registerRoutes(Javalin app) {
-
         //Get rute der generer options til en forespørgsel, samt renderer forespørgselssiden
-        app.get("/send-inquiry", ctx -> ctx.render("send-inquiry.html", Map.of(
-                "carportWidthOptions", DropdownOptions.generateOptions(240, 600, 30),
-                "carportLengthOptions", DropdownOptions.generateOptions(240, 780, 30),
-                "shedWidthOptions", DropdownOptions.generateOptions(210, 720, 30),
-                "shedLengthOptions", DropdownOptions.generateOptions(210, 720, 30)
-        )));
+        app.get("/send-inquiry", ctx -> ctx.render("send-inquiry.html", inquiryService.generateDropdownOptions()));
+        app.get("/edit-inquiry", ctx -> ctx.render("edit-inquiry.html", inquiryService.generateDropdownOptions()));
 
         app.post("/submit-inquiry", this::submitInquiry);
         app.get("/unassigned-inquiries", this::showUnassignedInquiries);
         app.get("/sales-portal", ctx -> ctx.render("sales-portal.html"));
         app.post("/assign-salesman", this::assignSalesmanToInquiry);
         app.get("/inquiries", this::showAllInquiries);
+        app.get("/show-edit-inquiry-form", this::showEditInquiryForm);
+        app.post("/edit-inquiry", this::editInquiry);
     }
 
     public void showAllInquiries(Context ctx) {
@@ -68,8 +71,8 @@ public class InquiryController {
         int inquiryID = Integer.parseInt(ctx.formParam("inquiryId"));
         int salesmanID = Integer.parseInt(ctx.formParam("salesmanId"));
 
-        InquiryService inquiryService = new InquiryService();
         inquiryService.assignSalesmanToInquiry(inquiryID, salesmanID, dbController);
+
 
         ctx.redirect("/unassigned-inquiries");
     }
@@ -80,9 +83,7 @@ public class InquiryController {
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
 
         // Filtrér inquiries, der ikke har en sælger
-        List<Inquiry> unassignedInquiries = inquiries.stream()
-                .filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId(), dbController))
-                .toList();
+        List<Inquiry> unassignedInquiries = inquiries.stream().filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId(), dbController)).toList();
 
         List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
 
@@ -92,84 +93,62 @@ public class InquiryController {
 
     //Indsend en ny forespørgsel
     public void submitInquiry(Context ctx) {
-        //Henter data fra formularen
-        String name = ctx.formParam("name");
-        String email = ctx.formParam("email");
-        int phone = Integer.parseInt(ctx.formParam("phone"));
-        String address = ctx.formParam("address");
-        String city = ctx.formParam("city");
-        int zipcode = Integer.parseInt(ctx.formParam("zipcode"));
-        String comments = ctx.formParam("comments");
-
-        //Validerer de påkrævede felter
-        if (name == null || name.isBlank() || email == null || email.isBlank()) {
-            ctx.status(400).result("Navn og email skal udfyldes");
-            return;
-        }
-
-        //Henter valgene fra formularen
-        Double carportLength = parseFormParamAsDouble(ctx.formParam("carportLength"), "Carport længde");
-        Double carportWidth = parseFormParamAsDouble(ctx.formParam("carportWidth"), "Carport bredde");
-        Double shedLength = parseFormParamAsDouble(ctx.formParam("shedLength"), "Skurlængde");
-        Double shedWidth = parseFormParamAsDouble(ctx.formParam("shedWidth"), "Skurbredde");
-
-        // Opret en kunde
-        Customer customer = new Customer(name, email, phone, address, city, zipcode);
-
         try {
-            // Gem kunden i databasen og få det genererede id
-            int customerId = customer.saveToDatabase(dbController);
+            // Hent og valider data fra formularen
+            Customer customer = requestParser.parseCustomerFromRequest(ctx);
+            Inquiry inquiry = requestParser.parseInquiryFromRequest(ctx, customer);
 
-            // Opret og gem forespørgslen
-            Inquiry inquiry = new Inquiry();
-            inquiry.setCustomerId(customerId); // Brug det genererede ID
-            inquiry.setCarportLength(carportLength);
-            inquiry.setCarportWidth(carportWidth);
-            inquiry.setShedLength(shedLength);
-            inquiry.setShedWidth(shedWidth);
-            inquiry.setComments(comments);
-            inquiry.setStatus("Under behandling");
-            inquiry.setOrderDate(new java.util.Date());
+            // Gem kunden og forespørgslen via services
+            inquiryService.saveInquiryWithCustomer(inquiry, customer);
 
-            inquiry.saveToDatabase(dbController);
-
-            // Send email
-            EmailService emailService = new EmailService();
+            // Send en bekræftelsesemail
             emailService.sendCustomerInquiryEmail(customer, inquiry);
-
             emailService.saveEmailsToDatabase(inquiry, customer, dbController);
 
             // Render bekræftelsessiden
-            ctx.render("inquiry-confirmation.html", Map.of(
-                    "customerName", name,
-                    "carportLength", carportLength,
-                    "carportWidth", carportWidth,
-                    "shedLength", shedLength != null ? shedLength : "Ingen",
-                    "shedWidth", shedWidth != null ? shedWidth : "Ingen",
-                    "comments", comments != null ? comments : "Ingen",
-                    "status", "Under behandling"
-            ));
+            ctx.render("inquiry-confirmation.html", Map.of("customerName", customer.getName(), "carportLength", inquiry.getCarportLength(), "carportWidth", inquiry.getCarportWidth(), "shedLength", inquiry.getShedLength() != null ? inquiry.getShedLength() : "Ingen", "shedWidth", inquiry.getShedWidth() != null ? inquiry.getShedWidth() : "Ingen", "comments", inquiry.getComments() != null ? inquiry.getComments() : "Ingen", "status", inquiry.getStatus()));
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result("Ugyldig input: " + e.getMessage());
         } catch (Exception e) {
-            ctx.status(500).result("Forespørgslen blev ikke gemt i databasen");
+            ctx.status(500).result("Forespørgslen blev ikke gemt korrekt.");
             e.printStackTrace();
         }
     }
 
-
-    /*public void editInquiry(Context ctx) {
+    public void editInquiry(Context ctx) {
         try {
-            // Mapper data fra HTTP-anmodningen til et Inquiry objekt
-            Inquiry inquiry = InquiryMapper.mapFromRequest(ctx);
+            // Hent parametre fra forespørgslen og opret et Inquiry-objekt
+            Inquiry inquiry = new Inquiry();
+            inquiry.setId(Integer.parseInt(ctx.formParam("id")));
+            inquiry.setSalesmanId(requestParser.parseNullableInteger(ctx.formParam("salesmanId")));
+            inquiry.setStatus(ctx.formParam("status"));
+            inquiry.setComments(ctx.formParam("comments"));
+            inquiry.setCarportLength(requestParser.parseDouble(ctx.formParam("carportLength")));
+            inquiry.setCarportWidth(requestParser.parseDouble(ctx.formParam("carportWidth")));
+            inquiry.setShedLength(requestParser.parseDouble(ctx.formParam("shedLength")));
+            inquiry.setShedWidth(requestParser.parseDouble(ctx.formParam("shedWidth")));
+            inquiry.setEmailSent(requestParser.parseNullableBoolean(ctx.formParam("emailSent")));
 
-            // Opdaterer forespørgslen i databasen
-            inquiryService.updateInquiryInDatabase(inquiry);
+            // Opdater forespørgslen i databasen
+            inquiryService.updateInquiryInDatabase(inquiry, dbController);
 
-            ctx.status(200).result("Forespørgslen er blevet redigeret.");
+            Customer customer = inquiryService.getCustomerByInquiryId(inquiry.getId(), dbController);
+            emailService.sendCustomerInquiryEmail(customer, inquiry);
+            emailService.saveEmailsToDatabase(inquiry, customer, dbController);
+
+
         } catch (Exception e) {
-            ctx.status(400).result("Fejl under opdateringen af forespørgslen.");
             e.printStackTrace();
         }
-    }*/
+    }
+
+    public void showEditInquiryForm(Context ctx) {
+        int inquiryId = Integer.parseInt(ctx.queryParam("id"));
+
+        Inquiry inquiry = inquiryService.getInquiryById(inquiryId, dbController);
+
+        ctx.render("edit-inquiry.html", Map.of("inquiry", inquiry));
+    }
 
     //Parser formularparametre som Double
     private static Double parseFormParamAsDouble(String param, String fieldName) {

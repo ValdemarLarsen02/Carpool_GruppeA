@@ -31,6 +31,10 @@
                 <p><b>Længde på redskabsskur:</b> <span th:text="${inquiry.shedLength}"></span></p>
                 <p><b>Bredde på redskabsskur:</b> <span th:text="${inquiry.shedWidth}"></span></p>
                 <p><b>Kommentarer:</b> <span th:text="${inquiry.comments}"></span></p>
+                <form th:action="@{/show-edit-inquiry-form}" method="get">
+                    <input type="hidden" name="id" th:value="${inquiry.id}">
+                    <button type="submit" class="btn btn-primary mt-2">Rediger</button>
+                </form>
             </div>
         </div>
     </div>

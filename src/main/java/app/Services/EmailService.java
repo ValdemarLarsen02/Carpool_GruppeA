@@ -15,6 +15,12 @@ import java.util.Properties;
 
 public class EmailService {
 
+    private DatabaseController dbController;
+
+    public EmailService(DatabaseController dbController) {
+        this.dbController = dbController;
+    }
+
 
     private static final String SMTP_HOST = "smtp.mailersend.net";
     private static final String SMTP_PORT = "587";
@@ -52,6 +58,7 @@ public class EmailService {
         // Send emailen
         Transport.send(message);
     }
+
 
     // Byg emailens indhold med kundens forespørgsel
     private String buildInquiryEmailContent(Customer customer, Inquiry inquiry) {
@@ -105,12 +112,12 @@ public class EmailService {
 
     }
 
+
     public void saveEmailsToDatabase(Inquiry inquiry, Customer customer, DatabaseController dbController) {
 
         String query = "INSERT INTO sent_emails (recipient_email, subject, content) VALUES (?, ?, ?)";
 
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             // Byg e-mailens indhold baseret på inquiry og customer
             String emailContent = buildInquiryEmailContent(customer, inquiry);
@@ -132,18 +139,20 @@ public class EmailService {
     public List<Email> showAllSentEmails(DatabaseController dbController) {
         List<Email> sentEmails = new ArrayList<>();
 
+
         String query = "SELECT * FROM sent_emails";
 
-        try (Connection connection = dbController.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+        try (Connection connection = dbController.getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+
 
             while (resultSet.next()) {
                 String recipient = resultSet.getString("recipient_email");
                 String subject = resultSet.getString("subject");
                 String content = resultSet.getString("content");
 
+
                 Email email = new Email(recipient, subject, content);
+                sentEmails.add(email);
             }
         } catch (SQLException e) {
             e.printStackTrace();
