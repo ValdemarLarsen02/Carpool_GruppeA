@@ -1,7 +1,7 @@
 package app.controllers;
 
-import app.Services.InquiryService;
-import app.Services.SalesmanService;
+import app.services.InquiryService;
+import app.services.SalesmanService;
 import app.config.Customer;
 import app.config.Inquiry;
 import app.persistence.InquiryMapper;
@@ -9,7 +9,7 @@ import app.utils.RequestParser;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.config.Salesman;
-import app.Services.EmailService;
+import app.services.EmailService;
 import app.utils.DropdownOptions;
 
 import java.util.List;

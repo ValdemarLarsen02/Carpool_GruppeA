@@ -6,7 +6,7 @@ public class Product {
     private int id; // Til database
     private String name;
     private String description; // Til database
-    private BigDecimal price; // Intern pris
+    private String price; // Intern pris
     private String category; // Til database
     private BigDecimal externalPrice; // Pris fra Scrapper
     private String meterPrice; // Meterpris fra Scrapper
@@ -16,10 +16,11 @@ public class Product {
 
     // Standardkonstruktør (krævet af Jackson) ellers fejer den...
     public Product() {
+
     }
 
     // Konstruktør til interne produkter (fra databasen)
-    public Product(int id, String name, String description, BigDecimal price, String category, BigDecimal externalPrice, String url, String imageUrl) {
+    public Product(int id, String name, String description, String price, String category, BigDecimal externalPrice, String url, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -52,9 +53,10 @@ public class Product {
         return description;
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return price;
     }
+
 
     public String getCategory() {
         return category;
@@ -89,7 +91,7 @@ public class Product {
         this.description = description;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

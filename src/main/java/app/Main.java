@@ -1,52 +1,57 @@
 package app;
 
+
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
 import app.controllers.AdminController;
 import app.controllers.DatabaseController;
-import app.controllers.StripePayment;
-import app.models.Product;
-import app.services.PriceFinder;
+import app.controllers.EmailController;
+import app.controllers.InquiryController;
+import app.utils.RequestParser;
 import app.utils.Scrapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
-import java.util.List;
+import java.util.Date;
+
+import app.services.*;
 
 public class Main {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         // Initializing Javalin and Jetty webserver
-
         Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
-            config.jetty.modifyServletContextHandler(handler ->  handler.setSessionHandler(SessionConfig.sessionConfig()));
+            config.staticFiles.add("/public"); // Til CSS og JS
+            config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
-        }).start(7070);
+        }).start(8080);
+        app.get("/", ctx -> ctx.render("index.html"));
+        DatabaseController dbController = new DatabaseController();
+        dbController.initialize();
 
-
-        //Db loader:
-
-
-        // Opsætning af routes
-        StripePayment.registerRoutes(app);
+        CustomerService customerService = new CustomerService(dbController);
+        InquiryService inquiryService = new InquiryService(customerService, dbController);
+        SalesmanService salesmanService = new SalesmanService();
+        RequestParser requestParser = new RequestParser();
+        EmailService emailService = new EmailService(dbController);
         AdminController.registerRoutes(app);
 
-        app.get("/", ctx ->  ctx.render("index.html"));
+        // Routing
+
         app.get("/test", ctx -> ctx.render("payment.html"));
 
-        //Test af scrapper:
-        PriceFinder priceFinder = new PriceFinder();
+        InquiryController inquiryController = new InquiryController(inquiryService, salesmanService, requestParser, emailService, dbController);
+        EmailController emailController = new EmailController(emailService, dbController);
+        inquiryController.registerRoutes(app);
+        emailController.registerRoutes(app);
 
-        // Søg efter priser for et produkt
-        String searchTerm = "Spærtræ";
-        List<Product> products = priceFinder.findPrices(searchTerm);
 
-        // Udskriv resultaterne
-        for (Product product : products) {
-            System.out.println(product);
-        }
+        //Test af priceFinder
 
+
+        PartsListGenerator generator = new PartsListGenerator(540, 600);
+
+        // Udskriv den samlede stykliste
+        System.out.println(generator.getPartsList());
 
     }
 }

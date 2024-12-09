@@ -27,12 +27,11 @@ public class PriceFinder {
      */
     public List<Product> findPrices(String searchTerm) {
         List<Product> products = searchInDatabase(searchTerm);
-
         // Hvis der ikke blev fundet produkter i databasen, brug scrapper
         if (products.isEmpty()) {
-            System.out.println("Produkt ikke fundet i databasen. Søger med Scrapper...");
             products = scrapper.searchProducts(searchTerm);
         }
+        System.out.println(products.toString());
 
         return products;
     }
@@ -43,33 +42,42 @@ public class PriceFinder {
      * @param searchTerm Søgeterm for produktet
      * @return Liste af produkter fundet i databasen
      */
-    private List<Product> searchInDatabase(String searchTerm) {
+    public List<Product> searchInDatabase(String searchTerm) {
         List<Product> products = new ArrayList<>();
 
-        String query = "SELECT * FROM Product WHERE name ILIKE ? OR description ILIKE ?";
+        // Query til at finde ligheder
+        String query = "SELECT * FROM Product WHERE name ILIKE ?";
+
         try (Connection connection = databaseController.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
-            // Brug wildcard søgning med "%"
-            stmt.setString(1, "%" + searchTerm + "%");
-            stmt.setString(2, "%" + searchTerm + "%");
+            // Tilføj wildcard (%) til søgetermen for at finde lignende resultater
+            searchTerm = "%" + searchTerm.trim().replaceAll("\\s*-\\s*", "-") + "%";
+            stmt.setString(1, searchTerm);
+
+            // Log den endelige query for debugging
 
             ResultSet rs = stmt.executeQuery();
+            boolean found = false; // Brug en indikator til at spore, om noget blev fundet
             while (rs.next()) {
                 Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));
                 product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getBigDecimal("price"));
+                product.setPrice(rs.getString("price"));
                 product.setCategory(rs.getString("category"));
                 product.setImageUrl(rs.getString("image_url"));
 
                 products.add(product);
+                found = true;
             }
+
         } catch (Exception e) {
             System.err.println("Fejl under søgning i databasen: " + e.getMessage());
         }
 
         return products;
     }
+
+
 }

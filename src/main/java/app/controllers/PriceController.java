@@ -1,6 +1,6 @@
 package app.controllers;
 
-import app.Services.PriceCalculatorService;
+import app.services.PriceCalculatorService;
 import com.stripe.service.PriceService;
 
 public class PriceController {

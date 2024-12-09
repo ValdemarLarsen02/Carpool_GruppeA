@@ -1,7 +1,7 @@
-package app.Services;
+package app.services;
 
 import app.config.PriceResult;
-import app.utils.Product;
+import app.models.Product;
 import app.utils.Scrapper;
 
 import java.util.List;
@@ -67,7 +67,6 @@ public class PriceCalculatorService {
         } catch (NumberFormatException e) {
             return 0.0;
         }
-
     }
 
     private double calculateCost(double price) {

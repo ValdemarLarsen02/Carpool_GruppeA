@@ -37,7 +37,7 @@ public class ProductService {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("description"),
-                        rs.getBigDecimal("price"),
+                        rs.getString("price"),
                         rs.getString("category"),
                         rs.getBigDecimal("external_price"),
                         rs.getString("url"),
@@ -65,7 +65,7 @@ public class ProductService {
             // Sætter parametre baseret på produktets felter
             stmt.setString(1, product.getName());
             stmt.setString(2, product.getDescription());
-            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setString(3, product.getPrice());
             stmt.setString(4, product.getCategory());
             stmt.setBigDecimal(5, product.getExternalPrice());
             stmt.setString(6, product.getUrl());
@@ -90,7 +90,7 @@ public class ProductService {
             // Sætter parametre baseret på produktets felter
             stmt.setString(1, product.getName());
             stmt.setString(2, product.getDescription());
-            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setString(3, product.getPrice());
             stmt.setString(4, product.getCategory());
             stmt.setBigDecimal(5, product.getExternalPrice());
             stmt.setString(6, product.getUrl());

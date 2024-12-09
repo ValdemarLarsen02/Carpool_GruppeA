@@ -1,6 +1,6 @@
 package app.controllers;
 
-import app.Services.EmailService;
+import app.services.EmailService;
 import app.config.Email;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
