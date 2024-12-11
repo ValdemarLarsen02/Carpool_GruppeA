@@ -13,27 +13,34 @@
             background-color: #f8f9fa;
             color: #333;
         }
+
         .navbar {
             background-color: #343a40;
         }
+
         .navbar-brand, .nav-link {
             color: #f8f9fa !important;
         }
+
         .navbar-brand:hover, .nav-link:hover {
             color: #adb5bd !important;
         }
+
         footer {
             background-color: #343a40;
             color: #f8f9fa;
             margin-top: auto;
         }
+
         footer a {
             color: #adb5bd;
             text-decoration: none;
         }
+
         footer a:hover {
             text-decoration: underline;
         }
+
         .card {
             border: none;
             border-radius: 10px;
@@ -47,7 +54,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">Johannes Fog</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -96,7 +104,8 @@
                         <h3 class="text-secondary mt-4">Forespørgselsdetaljer</h3>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <input type="text" class="form-control" id="status" name="status" th:value="${inquiry.status}"
+                            <input type="text" class="form-control" id="status" name="status"
+                                   th:value="${inquiry.status}"
                                    placeholder="Indtast status">
                         </div>
 

@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.Services.CustomerService;
 import app.Services.InquiryService;
 import app.Services.SalesmanService;
 import app.config.Customer;
@@ -25,14 +26,16 @@ public class InquiryController {
     private SalesmanService salesmanService;
     private InquiryMapper inquiryMapper;
     private RequestParser requestParser;
+    private CustomerService customerService;
 
     //Konstruktør
-    public InquiryController(InquiryService inquiryService, SalesmanService salesmanService, RequestParser requestParser, EmailService emailService, DatabaseController dbController) {
+    public InquiryController(InquiryService inquiryService, SalesmanService salesmanService, RequestParser requestParser, EmailService emailService, CustomerService customerService, DatabaseController dbController) {
         this.salesmanService = salesmanService;
         this.inquiryService = inquiryService;
         this.requestParser = requestParser;
         this.emailService = emailService;
         this.dbController = dbController;
+        this.customerService = customerService;
 
     }
 
@@ -50,7 +53,22 @@ public class InquiryController {
         app.get("/inquiries", this::showAllInquiries);
         app.get("/show-edit-inquiry-form", this::showEditInquiryForm);
         app.post("/edit-inquiry", this::editInquiry);
+        app.get("/customer-info/{id}", this::showCustomerInfo);
+
     }
+
+    public void showCustomerInfo(Context ctx) {
+        String idParam = ctx.pathParam("id");
+        try {
+            int customerId = Integer.parseInt(idParam);
+            Customer customer = customerService.getCustomerById(customerId);
+            ctx.render("customer-info.html", Map.of("customer", customer));
+
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Ugyldigt kunde-ID");
+        }
+    }
+
 
     public void showAllInquiries(Context ctx) {
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase();
@@ -131,7 +149,7 @@ public class InquiryController {
             // Opdater forespørgslen i databasen
             inquiryService.updateInquiryInDatabase(inquiry);
 
-            Customer customer = inquiryService.getCustomerByInquiryId(inquiry.getId(), dbController);
+            Customer customer = inquiryService.getCustomerByInquiryId(inquiry.getId());
             String recipient = customer.getEmail();
             emailService.sendCustomerInquiryEmail(customer, inquiry, recipient);
             emailService.saveEmailsToDatabase(inquiry, customer, dbController);
@@ -146,6 +164,7 @@ public class InquiryController {
         int inquiryId = Integer.parseInt(ctx.queryParam("id"));
 
         Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
+        inquiryService.getCustomerByInquiryId(inquiryId);
 
         ctx.render("edit-inquiry.html", Map.of("inquiry", inquiry));
     }

@@ -50,4 +50,33 @@ public class CustomerService {
 
         return customer.getId();
     }
+
+    public Customer getCustomerById(int customerId) {
+        String query = "SELECT * FROM customers WHERE id = ?";
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, customerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Customer customer = new Customer(
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getInt("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("city"),
+                        resultSet.getInt("zipcode")
+                );
+
+                customer.setId(resultSet.getInt("id"));
+                return customer;
+            }
+        } catch (SQLException e) {
+            String errorMessage = "Der skete en fejl, ved at hente en kundes data via kunde id'et, i getCustomerById metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.out.println(errorMessage);
+        }
+        return null;
+    }
+
 }

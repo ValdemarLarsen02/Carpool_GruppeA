@@ -269,7 +269,7 @@ public class InquiryService {
         saveInquiryToDatabase(inquiry);
     }
 
-    public Customer getCustomerByInquiryId(int inquiryId, DatabaseController dbController) {
+    public Customer getCustomerByInquiryId(int inquiryId) {
         String query = "SELECT c.* FROM inquiries i " + "JOIN customers c ON i.customer_id = c.id " + "WHERE i.id = ?";
 
         try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
@@ -376,14 +376,13 @@ public class InquiryService {
         }
     }
 
-    public String getCustomerEmailById(String customerId){
+    public String getCustomerEmailById(String customerId) {
         String email = null;
         String query = "SELECT email FROM customers WHERE customer_id = ?";
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, customerId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 email = resultSet.getString("email");
             }
         } catch (SQLException e) {
