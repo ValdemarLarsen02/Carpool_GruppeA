@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SalesmanService {
+    private ErrorLoggerService errorLogger;
+
+    public SalesmanService(ErrorLoggerService errorLogger) {
+        this.errorLogger = errorLogger;
+    }
 
     //Henter alle sælgere fra databasen
     public List<Salesman> getAllSalesmen(DatabaseController dbController) {
@@ -26,7 +31,9 @@ public class SalesmanService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String errorMessage = "Der skete en fejl under hentningen af alle sælgere, i getAllSalesmen metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.out.println(errorMessage);
         }
 
         return salesmen;

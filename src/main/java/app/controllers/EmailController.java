@@ -19,13 +19,15 @@ public class EmailController {
     }
 
     public void registerRoutes(Javalin app) {
-        app.get("/received-emails", this::showReceivedEmails);
+        app.get("/email-management", this::showReceivedEmails);
+
+
     }
 
     private void showReceivedEmails(Context ctx) {
-        List<Email> sentEmails = emailService.showAllSentEmails(dbController);
+        List<Email> sentEmails = emailService.showAllEmails(dbController);
 
-        ctx.render("received-emails.html", Map.of("emails", sentEmails));
+        ctx.render("email-management.html", Map.of("emails", sentEmails));
 
     }
 

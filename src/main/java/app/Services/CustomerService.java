@@ -5,13 +5,16 @@ import app.controllers.DatabaseController;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CustomerService {
     private final DatabaseController dbController;
+    private ErrorLoggerService errorLogger;
 
-    public CustomerService(DatabaseController dbController) {
+    public CustomerService(DatabaseController dbController, ErrorLoggerService errorLogger) {
         this.dbController = dbController;
+        this.errorLogger = errorLogger;
     }
 
     public int saveCustomerToDatabase(Customer customer) {
@@ -39,8 +42,10 @@ public class CustomerService {
 
             System.out.println("Kunde gemt i databasen med ID: " + customer.getId());
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Kunne ikke gemme kunden i databasen.");
+            String errorMessage = "Der skete en fejl, da kunden skulle gemmes i databasen, i saveCustomerToDatabase metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.out.println(errorMessage);
+
         }
 
         return customer.getId();

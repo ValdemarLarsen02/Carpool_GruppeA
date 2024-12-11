@@ -13,45 +13,40 @@
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Liste over ikke tildelte forespørgsler</h1>
-    <div class="row">
+    <div class="row gy-4">
         <!-- Thymeleaf loop til at vise data -->
-        <div class="col-md-4 mb-4" th:each="inquiry : ${inquiries}">
-            <div class="card">
+        <div class="col-md-6" th:each="inquiry : ${inquiries}">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Forespørgsel ID: <span th:text="${inquiry.id}"></span></h5>
-                    <p><b>KundeID:</b> <span th:text="${inquiry.customerId}"></span></p>
-                    <p><b>Tildelt Sælger ID:</b> <span th:text="${inquiry.salesmanId}"></span></p>
+                    <ul class="list-unstyled mb-4">
+                        <li><strong>KundeID:</strong> <span th:text="${inquiry.customerId}"></span></li>
+                        <li><strong>Tildelt Sælger ID:</strong> <span th:text="${inquiry.salesmanId}"></span></li>
+                        <li><strong>Email Afsendt:</strong> <span th:text="${inquiry.emailSent ? 'Ja' : 'Nej'}"></span></li>
+                        <li><strong>Status:</strong> <span th:text="${inquiry.status}"></span></li>
+                        <li><strong>Oprettelses Dato:</strong> <span th:text="${#dates.format(inquiry.orderDate, 'dd-MM-yyyy')}"></span></li>
+                        <li><strong>Længde på carport:</strong> <span th:text="${inquiry.carportLength}"></span> cm</li>
+                        <li><strong>Bredde på carport:</strong> <span th:text="${inquiry.carportWidth}"></span> cm</li>
+                        <li><strong>Længde på redskabsskur:</strong> <span th:text="${inquiry.shedLength}"></span> cm</li>
+                        <li><strong>Bredde på redskabsskur:</strong> <span th:text="${inquiry.shedWidth}"></span> cm</li>
+                        <li><strong>Kommentarer:</strong> <span th:text="${inquiry.comments}"></span></li>
+                    </ul>
                     <div th:if="${!inquiry.salesmanAssigned}">
-                        <form th:action="@{/assign-salesman}" method="post">
-                            <!-- Skjulte felter til forespørgselens ID -->
+                        <form th:action="@{/assign-salesman}" method="post" class="d-flex flex-column">
                             <input type="hidden" name="inquiryId" th:value="${inquiry.id}">
-
-                            <!-- Dropdown til valg af sælger -->
                             <div class="mb-3">
                                 <label for="salesmanId" class="form-label">Vælg Sælger:</label>
                                 <select name="salesmanId" id="salesmanId" class="form-select" required>
                                     <option value="" selected disabled>Vælg en sælger</option>
-                                    <!-- Iterer over sælgere -->
                                     <option th:each="salesman : ${salesmen}"
                                             th:value="${salesman.id}"
                                             th:text="${salesman.name}"></option>
                                 </select>
                             </div>
-
-                            <!-- Knappen til at tildele sælger -->
                             <button type="submit" class="btn btn-primary">Tildel Sælger</button>
                         </form>
                     </div>
                 </div>
-                <p><b>Email Afsendt:</b> <span th:text="${inquiry.emailSent ? 'Ja' : 'Nej'}"></span></p>
-                <p><b>Status:</b> <span th:text="${inquiry.status}"></span></p>
-                <p><b>Oprettelses Dato:</b> <span th:text="${#dates.format(inquiry.orderDate, 'dd-MM-yyyy')}"></span>
-                </p>
-                <p><b>Længde på carport:</b> <span th:text="${inquiry.carportLength}"></span></p>
-                <p><b>Bredde på carport:</b> <span th:text="${inquiry.carportWidth}"></span></p>
-                <p><b>Længde på redskabsskur:</b> <span th:text="${inquiry.shedLength}"></span></p>
-                <p><b>Bredde på redskabsskur:</b> <span th:text="${inquiry.shedWidth}"></span></p>
-                <p><b>Kommentarer:</b> <span th:text="${inquiry.comments}"></span></p>
             </div>
         </div>
     </div>

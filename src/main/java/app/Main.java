@@ -27,11 +27,14 @@ public class Main {
         DatabaseController dbController = new DatabaseController();
         dbController.initialize();
 
-        CustomerService customerService = new CustomerService(dbController);
-        InquiryService inquiryService = new InquiryService(customerService, dbController);
-        SalesmanService salesmanService = new SalesmanService();
         RequestParser requestParser = new RequestParser();
-        EmailService emailService = new EmailService(dbController);
+        ErrorLoggerService errorLogger = new ErrorLoggerService(dbController);
+        CustomerService customerService = new CustomerService(dbController, errorLogger);
+        InquiryService inquiryService = new InquiryService(customerService, dbController, errorLogger);
+        EmailService emailService = new EmailService(dbController, errorLogger);
+        SalesmanService salesmanService = new SalesmanService(errorLogger);
+
+
 
 
         // Routing

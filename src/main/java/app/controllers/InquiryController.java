@@ -3,6 +3,7 @@ package app.controllers;
 import app.Services.InquiryService;
 import app.Services.SalesmanService;
 import app.config.Customer;
+import app.config.Email;
 import app.config.Inquiry;
 import app.persistence.InquiryMapper;
 import app.utils.RequestParser;
@@ -51,7 +52,7 @@ public class InquiryController {
     }
 
     public void showAllInquiries(Context ctx) {
-        List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
+        List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase();
 
         ctx.render("inquiries.html", Map.of("inquiries", inquiries));
     }
@@ -71,7 +72,7 @@ public class InquiryController {
         int inquiryID = Integer.parseInt(ctx.formParam("inquiryId"));
         int salesmanID = Integer.parseInt(ctx.formParam("salesmanId"));
 
-        inquiryService.assignSalesmanToInquiry(inquiryID, salesmanID, dbController);
+        inquiryService.assignSalesmanToInquiry(inquiryID, salesmanID);
 
 
         ctx.redirect("/unassigned-inquiries");
@@ -80,10 +81,10 @@ public class InquiryController {
 
     //Viser alle forespørgsler uden en sælger tilknyttet
     public void showUnassignedInquiries(Context ctx) {
-        List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase(dbController);
+        List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase();
 
         // Filtrér inquiries, der ikke har en sælger
-        List<Inquiry> unassignedInquiries = inquiries.stream().filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId(), dbController)).toList();
+        List<Inquiry> unassignedInquiries = inquiries.stream().filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId())).toList();
 
         List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
 
@@ -100,10 +101,6 @@ public class InquiryController {
 
             // Gem kunden og forespørgslen via services
             inquiryService.saveInquiryWithCustomer(inquiry, customer);
-
-            // Send en bekræftelsesemail
-            emailService.sendCustomerInquiryEmail(customer, inquiry);
-            emailService.saveEmailsToDatabase(inquiry, customer, dbController);
 
             // Render bekræftelsessiden
             ctx.render("inquiry-confirmation.html", Map.of("customerName", customer.getName(), "carportLength", inquiry.getCarportLength(), "carportWidth", inquiry.getCarportWidth(), "shedLength", inquiry.getShedLength() != null ? inquiry.getShedLength() : "Ingen", "shedWidth", inquiry.getShedWidth() != null ? inquiry.getShedWidth() : "Ingen", "comments", inquiry.getComments() != null ? inquiry.getComments() : "Ingen", "status", inquiry.getStatus()));
@@ -129,11 +126,13 @@ public class InquiryController {
             inquiry.setShedWidth(requestParser.parseDouble(ctx.formParam("shedWidth")));
             inquiry.setEmailSent(requestParser.parseNullableBoolean(ctx.formParam("emailSent")));
 
+
             // Opdater forespørgslen i databasen
-            inquiryService.updateInquiryInDatabase(inquiry, dbController);
+            inquiryService.updateInquiryInDatabase(inquiry);
 
             Customer customer = inquiryService.getCustomerByInquiryId(inquiry.getId(), dbController);
-            emailService.sendCustomerInquiryEmail(customer, inquiry);
+            String recipient = customer.getEmail();
+            emailService.sendCustomerInquiryEmail(customer, inquiry, recipient);
             emailService.saveEmailsToDatabase(inquiry, customer, dbController);
 
 
@@ -145,18 +144,10 @@ public class InquiryController {
     public void showEditInquiryForm(Context ctx) {
         int inquiryId = Integer.parseInt(ctx.queryParam("id"));
 
-        Inquiry inquiry = inquiryService.getInquiryById(inquiryId, dbController);
+        Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
 
         ctx.render("edit-inquiry.html", Map.of("inquiry", inquiry));
     }
 
-    //Parser formularparametre som Double
-    private static Double parseFormParamAsDouble(String param, String fieldName) {
-        try {
-            return param != null && !param.isEmpty() ? Double.parseDouble(param) : null; // Returner null hvis param er tom
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(fieldName + " skal være et tal.");
-        }
-    }
 
 }
