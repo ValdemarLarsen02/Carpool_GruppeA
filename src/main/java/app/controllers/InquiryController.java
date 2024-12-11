@@ -41,6 +41,7 @@ public class InquiryController {
         //Get rute der generer options til en forespørgsel, samt renderer forespørgselssiden
         app.get("/send-inquiry", ctx -> ctx.render("send-inquiry.html", inquiryService.generateDropdownOptions()));
         app.get("/edit-inquiry", ctx -> ctx.render("edit-inquiry.html", inquiryService.generateDropdownOptions()));
+        app.get("/about-us", ctx -> ctx.render("about-us.html"));
 
         app.post("/submit-inquiry", this::submitInquiry);
         app.get("/unassigned-inquiries", this::showUnassignedInquiries);
