@@ -47,8 +47,7 @@ public class Main {
 
         //Test af priceFinder
 
-
-        PartsListGenerator generator = new PartsListGenerator(540, 600);
+        PartsListGenerator generator = new PartsListGenerator(540, 600, 520);
 
         // Udskriv den samlede stykliste
         System.out.println(generator.getPartsList());
