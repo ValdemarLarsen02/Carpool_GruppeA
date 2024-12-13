@@ -1,13 +1,8 @@
 package app;
 
 import app.Services.*;
-import app.config.Customer;
-import app.config.Inquiry;
-import app.config.SessionConfig;
-import app.config.ThymeleafConfig;
-import app.controllers.DatabaseController;
-import app.controllers.EmailController;
-import app.controllers.InquiryController;
+import app.config.*;
+import app.controllers.*;
 import app.utils.RequestParser;
 import app.utils.Scrapper;
 import io.javalin.Javalin;
@@ -27,12 +22,15 @@ public class Main {
         DatabaseController dbController = new DatabaseController();
         dbController.initialize();
 
+
         RequestParser requestParser = new RequestParser();
         ErrorLoggerService errorLogger = new ErrorLoggerService(dbController);
         CustomerService customerService = new CustomerService(dbController, errorLogger);
         InquiryService inquiryService = new InquiryService(customerService, dbController, errorLogger);
         EmailService emailService = new EmailService(dbController, errorLogger);
-        SalesmanService salesmanService = new SalesmanService(errorLogger);
+        SalesmanService salesmanService = new SalesmanService(errorLogger, dbController);
+        Admin admin = new Admin(errorLogger, dbController);
+        AdminController adminController = new AdminController(admin, dbController);
 
 
 
@@ -43,8 +41,11 @@ public class Main {
 
         InquiryController inquiryController = new InquiryController(inquiryService, salesmanService, requestParser, emailService, customerService, dbController);
         EmailController emailController = new EmailController(emailService, dbController);
+        SalesmanController salesmanController = new SalesmanController(salesmanService, inquiryController, admin, dbController);
+        salesmanController.registerRoutes(app);
         inquiryController.registerRoutes(app);
         emailController.registerRoutes(app);
+        adminController.RegisterRoutes(app);
 
 
     }

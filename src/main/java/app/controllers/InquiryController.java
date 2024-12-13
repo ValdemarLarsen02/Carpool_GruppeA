@@ -78,7 +78,7 @@ public class InquiryController {
 
     //Viser alle forespørgsler
     public List<Salesman> showSalesmenDropdown() {
-        List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
+        List<Salesman> salesmen = salesmanService.getAllSalesmen();
 
         return salesmen;
     }
@@ -105,7 +105,7 @@ public class InquiryController {
         // Filtrér inquiries, der ikke har en sælger
         List<Inquiry> unassignedInquiries = inquiries.stream().filter(inquiry -> !inquiryService.hasSalesmanAssigned(inquiry.getId())).toList();
 
-        List<Salesman> salesmen = salesmanService.getAllSalesmen(dbController);
+        List<Salesman> salesmen = salesmanService.getAllSalesmen();
 
         // Render kun de unassigned inquiries
         ctx.render("unassigned-inquiries.html", Map.of("inquiries", unassignedInquiries, "salesmen", salesmen));
