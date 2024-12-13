@@ -9,26 +9,13 @@ import app.controllers.CustomerController;
 import app.controllers.DatabaseController;
 import app.controllers.InquiryController;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 public class Main {
     public static void main(String[] args) {
-        // Initialize database connection
-        String dbUrl = "jdbc:postgresql://<your-database-host>/<your-database-name>";
-        String dbUser = "<your-username>";
-        String dbPassword = "<your-password>";
-        Connection connection;
-
-        try {
-            connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-        } catch (Exception e) {
-            System.err.println("Failed to connect to the database: " + e.getMessage());
-            return;
-        }
+        // Initialize DatabaseController
+        DatabaseController dbController = new DatabaseController();
+        dbController.initialize(); // Initializes the connection pool
 
         // Initialize controllers
-        DatabaseController dbController = new DatabaseController(connection);
         CustomerController customerController = new CustomerController(dbController);
         InquiryController inquiryController = new InquiryController(dbController);
 
@@ -62,10 +49,15 @@ public class Main {
         });
 
         // Define API routes
-        app.post("/api/create-customer", customerController::createCustomer);
-        app.post("/api/login", customerController::loginCustomer);
-        app.put("/api/update-customer", customerController::updateCustomer);
+        app.post("/api/create-customer", customerController::createProfile); // Updated method name
+        app.post("/api/login", customerController::login);                  // Updated method name
+        app.put("/api/update-customer", customerController::updateProfile); // Updated method name
 
-        app.get("/api/order-status/:customerId", inquiryController::getOrderStatus);
+        app.get("/api/order-status/{customerId}", inquiryController::getOrderStatus); // Corrected syntax
+
+        // Graceful shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            dbController.close(); // Close the database connection pool on shutdown
+        }));
     }
 }
