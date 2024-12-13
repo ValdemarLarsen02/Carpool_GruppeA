@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carport List</title>
+</head>
+<body>
+<h1>Carports</h1>
+<form method="get" action="/carports">
+    <label for="searchTerm">Search:</label>
+    <input type="text" id="searchTerm" name="searchTerm" placeholder="Search carports">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Dimensions</th>
+        <th>Price</th>
+        <th>Details</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#carports}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{dimensions}}</td>
+        <td>{{price}}</td>
+        <td><a href="/carports/details?id={{id}}">View Details</a></td>
+    </tr>
+    {{/carports}}
+    </tbody>
+</table>
+</body>
+</html>
