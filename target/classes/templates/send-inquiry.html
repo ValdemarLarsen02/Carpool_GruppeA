@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Carport Sketch</title>
+    <title>Carport Forespørgsel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         svg {
@@ -17,155 +17,95 @@
 <body>
 <div class="container mt-5">
     <h1>Forespørgsel på Carport</h1>
-    <form id="carportForm">
+    <form method="POST" action="/submit-inquiry" id="carportForm">
         <!-- Bredde -->
         <div class="mb-3">
             <label for="carportWidth" class="form-label">Bredde på Carport (cm)</label>
             <select name="carportWidth" id="carportWidth" class="form-select">
-                <option value="300">300</option>
-                <option value="400">400</option>
+                <th:block th:each="option : ${carportWidthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
             </select>
         </div>
         <!-- Længde -->
         <div class="mb-3">
             <label for="carportLength" class="form-label">Længde på Carport (cm)</label>
             <select name="carportLength" id="carportLength" class="form-select">
-                <option value="500">500</option>
-                <option value="600">600</option>
+                <th:block th:each="option : ${carportLengthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
             </select>
         </div>
-        <!-- Redskabsrum -->
-        <div class="mb-3">
-            <label for="shedWidth" class="form-label">Bredde på redskabsrum (cm)</label>
-            <select name="shedWidth" id="shedWidth" class="form-select">
-                <option value="0">Ingen skur</option>
-                <option value="150">150</option>
-            </select>
-        </div>
+        <!-- Redskabsskur længde -->
         <div class="mb-3">
             <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
             <select name="shedLength" id="shedLength" class="form-select">
-                <option value="0">Ingen skur</option>
-                <option value="200">200</option>
+                <option value="">Uden redskabsskur</option>
+                <th:block th:each="option : ${shedLengthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
             </select>
         </div>
+        <!-- Redskabsskur bredde -->
+        <div class="mb-3">
+            <label for="shedWidth" class="form-label">Bredde på redskabsrum (cm)</label>
+            <select name="shedWidth" id="shedWidth" class="form-select">
+                <option value="">Uden redskabsskur</option>
+                <th:block th:each="option : ${shedWidthOptions}">
+                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                </th:block>
+            </select>
+        </div>
+
+        <!-- Personlige oplysninger -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Navn</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Adresse</label>
+            <input type="text" name="address" id="address" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="zipcode" class="form-label">Postnummer</label>
+            <input type="text" name="zipcode" id="zipcode" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="city" class="form-label">By</label>
+            <input type="text" name="city" id="city" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Telefon</label>
+            <input type="text" name="phone" id="phone" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control">
+        </div>
+        <!-- Kommentarer -->
+        <div class="mb-3">
+            <label for="message" class="form-label">Kommentarer</label>
+            <textarea name="message" id="message" class="form-control"></textarea>
+        </div>
+        <!-- Send-knap -->
+        <button type="submit" class="btn btn-primary">Send forespørgsel</button>
     </form>
+
     <div class="mt-5">
         <h3>Din Carport Tegning</h3>
         <svg id="carportSketch"></svg>
+        <button id="activateMovement" class="btn btn-secondary mt-3">Aktiver pil-bevægelse</button>
     </div>
 </div>
 
+
+<!-- JavaScript -->
+<script src="/js/carport.js"></script>
 <script>
-    const form = document.getElementById("carportForm");
-    const sketch = document.getElementById("carportSketch");
-
-    let selectedElement = null;
-    let offset = { x: 0, y: 0 };
-
-    // Function to draw the grid
-    function drawGrid() {
-        const gridSize = 20; // Size of each grid square in pixels
-        const svgWidth = sketch.clientWidth;
-        const svgHeight = sketch.clientHeight;
-
-        for (let x = 0; x <= svgWidth; x += gridSize) {
-            const verticalLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            verticalLine.setAttribute("x1", x);
-            verticalLine.setAttribute("y1", 0);
-            verticalLine.setAttribute("x2", x);
-            verticalLine.setAttribute("y2", svgHeight);
-            verticalLine.setAttribute("stroke", "#ddd");
-            verticalLine.setAttribute("stroke-width", 0.5);
-            sketch.appendChild(verticalLine);
-        }
-
-        for (let y = 0; y <= svgHeight; y += gridSize) {
-            const horizontalLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            horizontalLine.setAttribute("x1", 0);
-            horizontalLine.setAttribute("y1", y);
-            horizontalLine.setAttribute("x2", svgWidth);
-            horizontalLine.setAttribute("y2", y);
-            horizontalLine.setAttribute("stroke", "#ddd");
-            horizontalLine.setAttribute("stroke-width", 0.5);
-            sketch.appendChild(horizontalLine);
-        }
-    }
-
-    // Function to draw the carport and shed
-    function drawCarport() {
-        const width = parseInt(document.getElementById("carportWidth").value || 0);
-        const length = parseInt(document.getElementById("carportLength").value || 0);
-        const shedWidth = parseInt(document.getElementById("shedWidth").value || 0);
-        const shedLength = parseInt(document.getElementById("shedLength").value || 0);
-
-        // Clear the SVG
-        sketch.innerHTML = "";
-
-        // Draw the grid
-        drawGrid();
-
-        // Draw the carport
-        const carport = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        carport.setAttribute("x", 50);
-        carport.setAttribute("y", 50);
-        carport.setAttribute("width", width / 5);
-        carport.setAttribute("height", length / 5);
-        carport.setAttribute("fill", "lightblue");
-        carport.setAttribute("stroke", "black");
-        sketch.appendChild(carport);
-
-        // Draw the shed
-        if (shedWidth > 0 && shedLength > 0) {
-            const shed = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            shed.setAttribute("x", 50 + (width / 5) - (shedWidth / 5)); // Position shed initially
-            shed.setAttribute("y", 50 + (length / 5) - (shedLength / 5));
-            shed.setAttribute("width", shedWidth / 5);
-            shed.setAttribute("height", shedLength / 5);
-            shed.setAttribute("fill", "brown");
-            shed.setAttribute("stroke", "black");
-            shed.setAttribute("cursor", "move"); // Show move cursor
-            sketch.appendChild(shed);
-
-            // Add event listeners for drag-and-drop
-            shed.addEventListener("mousedown", startDrag);
-            sketch.addEventListener("mousemove", drag);
-            sketch.addEventListener("mouseup", endDrag);
-            sketch.addEventListener("mouseleave", endDrag);
-        }
-    }
-
-    // Drag-and-drop functions
-    function startDrag(event) {
-        if (event.target.tagName === "rect" && event.target.getAttribute("fill") === "brown") {
-            selectedElement = event.target;
-            const rect = selectedElement.getBoundingClientRect();
-            offset = {
-                x: event.clientX - rect.x,
-                y: event.clientY - rect.y,
-            };
-        }
-    }
-
-    function drag(event) {
-        if (selectedElement) {
-            const x = event.clientX - offset.x;
-            const y = event.clientY - offset.y;
-            selectedElement.setAttribute("x", Math.round(x / 20) * 20); // Snap to grid
-            selectedElement.setAttribute("y", Math.round(y / 20) * 20); // Snap to grid
-        }
-    }
-
-    function endDrag() {
-        selectedElement = null;
-    }
-
-    // Event listener to redraw the carport on form changes
-    form.addEventListener("change", drawCarport);
-
-    // Initial draw
+    // JavaScript logic goes here
+    document.getElementById("carportForm").addEventListener("change", drawCarport);
     drawCarport();
+    drawGrid(sketch);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
