@@ -2,6 +2,7 @@ package app;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.rendering.template.JavalinThymeleaf;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import app.config.ThymeleafConfig;
@@ -21,6 +22,7 @@ public class Main {
 
         // Initialize Thymeleaf
         TemplateEngine templateEngine = ThymeleafConfig.templateEngine();
+        JavalinThymeleaf.configure(templateEngine);
 
         // Start Javalin server
         Javalin app = Javalin.create(config -> {

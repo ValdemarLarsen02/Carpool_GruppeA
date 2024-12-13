@@ -1,5 +1,6 @@
 package app.utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -9,11 +10,12 @@ public class ConfigLoader {
     static {
         try (InputStream input = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
-                throw new RuntimeException("Unable to find config.properties");
+                throw new IOException("Unable to find config.properties"); // Samler essensen fra begge fejlmeddelelser
             }
             properties.load(input);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load configuration: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Failed to load configuration: " + e.getMessage()); // Log en fejl i stedet for at smide en exception
+            throw new RuntimeException("Critical configuration loading error", e); // Eskaler hvis nødvendigt
         }
     }
 
