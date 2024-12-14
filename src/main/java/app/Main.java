@@ -25,5 +25,6 @@ public class Main {
         // Routing
 
         app.get("/", ctx ->  ctx.render("index.html"));
+        app.get("/carport-oversigt", ctx -> ctx.render("carport_oversigt.html"));
     }
 }
