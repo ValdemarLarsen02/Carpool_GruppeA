@@ -8,7 +8,6 @@ import app.config.ThymeleafConfig;
 import app.controllers.CustomerController;
 import app.controllers.DatabaseController;
 import app.controllers.InquiryController;
-import app.controllers.CarportController;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +18,7 @@ public class Main {
         // Initialize controllers
         CustomerController customerController = new CustomerController(dbController);
         InquiryController inquiryController = new InquiryController(dbController);
-        CarportController carportController = new CarportController();
+
 
         // Start Javalin server
         Javalin app = Javalin.create(config -> {
@@ -27,8 +26,7 @@ public class Main {
         }).start(8080);
 
         // Register routes
-        carportController.registerRoutes(app);
-
+      
         // Define Thymeleaf HTML routes
         app.get("/", ctx -> ctx.html(renderThymeleaf("index", new Context())));
         app.get("/customer", ctx -> ctx.html(renderThymeleaf("customer", new Context())));

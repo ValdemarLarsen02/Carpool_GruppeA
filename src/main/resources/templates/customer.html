@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Management</title>
-    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Customer Management</h1>
+
+    <!-- Feedback Message -->
+    <div id="responseMessage" class="alert" style="display: none;"></div>
 
     <!-- Create Profile Section -->
     <div class="card mb-4">
@@ -63,11 +66,11 @@
             <form id="update-profile-form">
                 <div class="mb-3">
                     <label for="updateName" class="form-label">New Name</label>
-                    <input type="text" class="form-control" id="updateName" placeholder="Enter your new name" required>
+                    <input type="text" class="form-control" id="updateName" placeholder="Enter your new name">
                 </div>
                 <div class="mb-3">
                     <label for="updatePassword" class="form-label">New Password</label>
-                    <input type="password" class="form-control" id="updatePassword" placeholder="Enter your new password" required>
+                    <input type="password" class="form-control" id="updatePassword" placeholder="Enter your new password">
                 </div>
                 <div class="mb-3">
                     <label for="updateEmail" class="form-label">Email</label>
@@ -84,7 +87,36 @@
 
 <!-- Custom JavaScript -->
 <script>
-    const API_BASE_URL = "http://localhost:8080/api";
+    const API_BASE_URL = "http://localhost:8080";
+
+    // Utility function to display messages
+    function displayMessage(message, type = "success") {
+        const messageBox = document.getElementById("responseMessage");
+        messageBox.style.display = "block";
+        messageBox.className = `alert alert-${type}`;
+        messageBox.textContent = message;
+    }
+
+    // Handle API requests
+    async function handleRequest(url, method, data) {
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${await response.text()}`);
+            }
+
+            const result = await response.text();
+            displayMessage(result, "success");
+        } catch (error) {
+            console.error(error);
+            displayMessage(error.message, "danger");
+        }
+    }
 
     // Create Profile
     document.getElementById("create-customer-form").addEventListener("submit", async (e) => {
@@ -94,12 +126,7 @@
             email: document.getElementById("customerEmail").value,
             password: document.getElementById("customerPassword").value,
         };
-        const response = await fetch(`${API_BASE_URL}/create-customer`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(customer)
-        });
-        alert(await response.text());
+        await handleRequest(`${API_BASE_URL}/createProfile`, "POST", customer);
     });
 
     // Login
@@ -109,12 +136,7 @@
             email: document.getElementById("loginEmail").value,
             password: document.getElementById("loginPassword").value,
         };
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(customer)
-        });
-        alert(await response.text());
+        await handleRequest(`${API_BASE_URL}/login`, "POST", customer);
     });
 
     // Update Profile
@@ -125,12 +147,7 @@
             password: document.getElementById("updatePassword").value,
             email: document.getElementById("updateEmail").value,
         };
-        const response = await fetch(`${API_BASE_URL}/update-customer`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(customer)
-        });
-        alert(await response.text());
+        await handleRequest(`${API_BASE_URL}/updateProfile`, "PUT", customer);
     });
 </script>
 </body>
