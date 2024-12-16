@@ -18,11 +18,13 @@ import java.util.Map;
 public class InquiryService {
     private DatabaseController dbController;
     private CustomerService customerService;
+    private ErrorLoggerService errorLogger;
 
 
-    public InquiryService(CustomerService customerService, DatabaseController dbController) {
+    public InquiryService(CustomerService customerService, DatabaseController dbController, ErrorLoggerService errorLogger) {
         this.dbController = dbController;
         this.customerService = customerService;
+        this.errorLogger = errorLogger;
     }
 
 
@@ -31,7 +33,7 @@ public class InquiryService {
     }
 
     //Henter inquiries fra databasen, og retunere dem i en liste
-    public List<Inquiry> getInquiriesFromDatabase(DatabaseController dbController) {
+    public List<Inquiry> getInquiriesFromDatabase() {
         List<Inquiry> inquiries = new ArrayList<>();
 
         // Query der henter data fra inquiries, customers og salesmen
@@ -70,14 +72,16 @@ public class InquiryService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            String errorMessage = "Fejl ved hentningen af forespørgsler fra databasen, i getInquiriesFromDatabase metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
 
         return inquiries;
     }
 
     //Tjekker om en inquiry har en sælger tilknyttet, retunere en boolean værdi
-    public boolean hasSalesmanAssigned(int inquiryID, DatabaseController dbController) {
+    public boolean hasSalesmanAssigned(int inquiryID) {
         String query = "SELECT salesmen_id FROM inquiries WHERE id = ?";
 
         try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -89,7 +93,9 @@ public class InquiryService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            String errorMessage = "Der skete en fejl, da der skulle tjekkes om hvilke forespørgsler der har en sælger tilknyttet, i hasSalesmanAssigned metoden";
+            errorLogger.logError(errorMessage, "MEDIUM", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
 
         return false;
@@ -97,7 +103,7 @@ public class InquiryService {
 
 
     //Tilknytter en sælger til en inquiry
-    public void assignSalesmanToInquiry(int inquiryID, int salesmanID, DatabaseController dbController) {
+    public void assignSalesmanToInquiry(int inquiryID, int salesmanID) {
         String checkQuery = "SELECT salesmen_id FROM inquiries WHERE id = ?";
         String updateQuery = "UPDATE inquiries SET salesmen_id = ? WHERE id = ?";
 
@@ -135,12 +141,13 @@ public class InquiryService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Fejl ved tildeling af sælger: " + e.getMessage(), e);
+            String errorMessage = "Der skete en fejl ved tildeling af sælger, i assignSalesmanToInquiry metoden";
+            errorLogger.logError(errorMessage, "MEDIUM", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
     }
 
-    public void updateInquiryInDatabase(Inquiry inquiry, DatabaseController dbController) {
+    public void updateInquiryInDatabase(Inquiry inquiry) {
         StringBuilder queryBuilder = new StringBuilder("UPDATE inquiries SET ");
         List<Object> parameters = new ArrayList<>();
 
@@ -201,12 +208,14 @@ public class InquiryService {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            String errorMessage = "Der skete en fejl under opdatering af forespørgslen i databasen, i updateInquiryInDatabase metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
     }
 
     // Henter en enkelt forespørgsel fra databasen baseret på dens ID
-    public Inquiry getInquiryById(int inquiryId, DatabaseController dbController) {
+    public Inquiry getInquiryById(int inquiryId) {
         String query = """
                 SELECT
                     inquiries.id AS inquiry_id,
@@ -245,8 +254,9 @@ public class InquiryService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Fejl ved hentning af Inquiry med ID " + inquiryId, e);
+            String errorMessage = "Der skete en fejl under hentningen af en inquiry via ID'et, i getInquiryById metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
 
         return null; // Returner null, hvis ingen Inquiry blev fundet
@@ -259,7 +269,7 @@ public class InquiryService {
         saveInquiryToDatabase(inquiry);
     }
 
-    public Customer getCustomerByInquiryId(int inquiryId, DatabaseController dbController) {
+    public Customer getCustomerByInquiryId(int inquiryId) {
         String query = "SELECT c.* FROM inquiries i " + "JOIN customers c ON i.customer_id = c.id " + "WHERE i.id = ?";
 
         try (Connection connection = dbController.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
@@ -276,7 +286,9 @@ public class InquiryService {
                 return customer;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            String errorMessage = "Der skete en fejl ved hentningen af en kunde gennem forespørgsels ID'et, i metoden getCustomerByInquiryId";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
 
         throw new IllegalArgumentException("Ingen kunde fundet for forespørgsel ID: " + inquiryId);
@@ -358,10 +370,27 @@ public class InquiryService {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Kunne ikke gemme forespørgslen i databasen.");
+            String errorMessage = "Fejl da forespørgslen skulle gemmes i databasen, i saveInquiryToDatabase metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
     }
 
+    public String getCustomerEmailById(String customerId) {
+        String email = null;
+        String query = "SELECT email FROM customers WHERE customer_id = ?";
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, customerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                email = resultSet.getString("email");
+            }
+        } catch (SQLException e) {
+            String errorMessage = "Fejl da kundes email skulle hentes i databasen via forespørgsels ID, i metoden getCustomerEmailById";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
+        }
+        return email;
+    }
 
 }

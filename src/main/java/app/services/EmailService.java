@@ -16,9 +16,11 @@ import java.util.Properties;
 public class EmailService {
 
     private DatabaseController dbController;
+    private ErrorLoggerService errorLogger;
 
-    public EmailService(DatabaseController dbController) {
+    public EmailService(DatabaseController dbController, ErrorLoggerService errorLogger) {
         this.dbController = dbController;
+        this.errorLogger = errorLogger;
     }
 
 
@@ -27,36 +29,43 @@ public class EmailService {
     private static final String USERNAME = "MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net";
     private static final String PASSWORD = "MKWpmxZ3tS2bO2Pd";
 
-    public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry) throws MessagingException {
-
+    public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry, String recipient) {
         // Opretter session til at sende mailen
-        Properties props = new Properties();
-        props.put("mail.smtp.host", SMTP_HOST);
-        props.put("mail.smtp.port", SMTP_PORT);
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
 
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(USERNAME, PASSWORD);
-            }
-        });
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.host", SMTP_HOST);
+            props.put("mail.smtp.port", SMTP_PORT);
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
 
-        // Opret emailen
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net")); // Opdater til din e-mail
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("Micke.dengaard@icloud.com")); // Opdater modtageren
-        message.setSubject("Ny forespørgsel om carport");
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(USERNAME, PASSWORD);
+                }
+            });
 
-        // Byg emailens indhold
-        String emailContent = buildInquiryEmailContent(customer, inquiry);
+            // Opret emailen
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net")); // Opdater til din e-mail
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient)); // Opdater modtageren
+            message.setSubject("Ny forespørgsel om carport");
 
-        // Sæt indholdet af emailen
-        message.setContent(emailContent, "text/html");
+            // Byg emailens indhold
+            String emailContent = buildInquiryEmailContent(customer, inquiry);
 
-        // Send emailen
-        Transport.send(message);
+            // Sæt indholdet af emailen
+            message.setContent(emailContent, "text/html");
+
+            // Send emailen
+            Transport.send(message);
+        } catch (MessagingException e) {
+            String errorMessage = "Fejl ved afsendelse af email, i metoden sendCustomerInquiryEmail";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
+        }
+
     }
 
 
@@ -68,26 +77,13 @@ public class EmailService {
         content.append("<head>");
         content.append("<meta charset='UTF-8'>");
         content.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
-        content.append("<style>");
-        content.append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }");
-        content.append(".container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; }");
-        content.append(".header { background-color: #007bff; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0; }");
-        content.append(".content { padding: 20px; }");
-        content.append(".content h1 { color: #007bff; }");
-        content.append(".content p { margin: 10px 0; }");
-        content.append(".footer { text-align: center; font-size: 0.9em; color: #666; margin-top: 20px; }");
-        content.append("</style>");
         content.append("</head>");
         content.append("<body>");
-        content.append("<div class='container'>");
 
         // Header
-        content.append("<div class='header'>");
         content.append("<h1>Forespørgsel om Carport</h1>");
-        content.append("</div>");
 
         // Body
-        content.append("<div class='content'>");
         content.append("<p><strong>Navn:</strong> ").append(customer.getName()).append("</p>");
         content.append("<p><strong>Email:</strong> ").append(customer.getEmail()).append("</p>");
         content.append("<p><strong>Telefon:</strong> ").append(customer.getPhoneNumber()).append("</p>");
@@ -97,19 +93,14 @@ public class EmailService {
         content.append("<p><strong>Carport Bredde:</strong> ").append(inquiry.getCarportWidth()).append(" m</p>");
         content.append("<p><strong>Redskabsskur længde:</strong> ").append(inquiry.getShedLength()).append(" m</p>");
         content.append("<p><strong>Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" m</p>");
-        content.append("</div>");
 
         // Footer
-        content.append("<div class='footer'>");
         content.append("<p>Tak for din forespørgsel! Vi vender tilbage hurtigst muligt.</p>");
-        content.append("</div>");
 
-        content.append("</div>");
         content.append("</body>");
         content.append("</html>");
 
         return content.toString();
-
     }
 
 
@@ -131,12 +122,13 @@ public class EmailService {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println("Fejl ved gemning af e-mail: " + e.getMessage());
+            String errorMessage = "Fejl ved gemning af e-mail i databasen, i metoden saveEmailsToDatabase";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
-
     }
 
-    public List<Email> showAllSentEmails(DatabaseController dbController) {
+    public List<Email> showAllEmails(DatabaseController dbController) {
         List<Email> sentEmails = new ArrayList<>();
 
 
@@ -155,7 +147,9 @@ public class EmailService {
                 sentEmails.add(email);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            String errorMessage = "Der skete en fejl under visningen af alle emails, i showAllEmails metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.err.println(errorMessage + ": " + e.getMessage());
         }
         return sentEmails;
 

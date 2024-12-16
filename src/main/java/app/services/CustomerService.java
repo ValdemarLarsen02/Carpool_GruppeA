@@ -5,13 +5,16 @@ import app.controllers.DatabaseController;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CustomerService {
     private final DatabaseController dbController;
+    private ErrorLoggerService errorLogger;
 
-    public CustomerService(DatabaseController dbController) {
+    public CustomerService(DatabaseController dbController, ErrorLoggerService errorLogger) {
         this.dbController = dbController;
+        this.errorLogger = errorLogger;
     }
 
     public int saveCustomerToDatabase(Customer customer) {
@@ -39,10 +42,41 @@ public class CustomerService {
 
             System.out.println("Kunde gemt i databasen med ID: " + customer.getId());
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Kunne ikke gemme kunden i databasen.");
+            String errorMessage = "Der skete en fejl, da kunden skulle gemmes i databasen, i saveCustomerToDatabase metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.out.println(errorMessage);
+
         }
 
         return customer.getId();
     }
+
+    public Customer getCustomerById(int customerId) {
+        String query = "SELECT * FROM customers WHERE id = ?";
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, customerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Customer customer = new Customer(
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getInt("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("city"),
+                        resultSet.getInt("zipcode")
+                );
+
+                customer.setId(resultSet.getInt("id"));
+                return customer;
+            }
+        } catch (SQLException e) {
+            String errorMessage = "Der skete en fejl, ved at hente en kundes data via kunde id'et, i getCustomerById metoden";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            System.out.println(errorMessage);
+        }
+        return null;
+    }
+
 }

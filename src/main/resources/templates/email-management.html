@@ -1,14 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</head>
-<body>
-<h1 class="text-center mt-5">Se emails</h1>
+    <title>Afsendte Emails</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
 
+        h1 {
+            color: #343a40;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            padding: 0;
+        }
+
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 0;
+            margin: 0;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: none;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .card p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        .card-content {
+            white-space: pre-wrap;
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 10px;
+            border: 1px solid #f1f1f1;
+            background-color: #fafafa;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 20px 0;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Johannes Fog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/}">Hjem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Produkter</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about-us">Om Os</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Kontakt</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/sales-portal}">Sælger Portal</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center">Liste over afsendte emails</h1>
+    <div>
+        <!-- Thymeleaf loop til at vise e-mails -->
+        <div th:each="email : ${emails}">
+            <div class="card">
+                <h5 class="card-title">Til: <span th:text="${email.recipient}"></span></h5>
+                <p><strong>Emne:</strong> <span th:text="${email.subject}"></span></p>
+                <p><strong>Indhold:</strong></p>
+                <div class="card-content" th:utext="${email.content}"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Besked, hvis der ikke er nogen e-mails -->
+    <div class="text-center mt-4" th:if="${emails.empty}">
+        <p class="text-muted">Ingen e-mails er blevet afsendt endnu.</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-auto">
+    <div class="container text-center">
+        <p>&copy; 2024 Johannes Fog. Alle rettigheder forbeholdes.</p>
+    </div>
+</footer>
 </body>
 </html>

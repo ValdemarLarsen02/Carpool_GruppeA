@@ -5,12 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Succes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef; /* Lysere baggrund */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .success-container {
+            background-color: #ffffff; /* Hvid baggrund for kortet */
+            border-radius: 12px; /* Bløde kanter */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1); /* Dybere skygge */
+            padding: 3rem 2rem;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            color: #4CAF50; /* Grøn farve til succes */
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: #6c757d; /* Grå tekst for subtile detaljer */
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            color: #6c757d;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<div class="container text-center my-5">
-    <h1>Tak for din forespørgsel!</h1>
-    <p>Vi vender tilbage med et tilbud hurtigst muligt.</p>
-    <a href="/carport-form" class="btn btn-primary">Tilbage til formularen</a>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Johannes Fog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="@{/}">Hjem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Produkter</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about-us">Om Os</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Kontakt</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/sales-portal}">Sælger Portal</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="success-container">
+        <h1>Tak for din forespørgsel!</h1>
+        <p>Vi vender tilbage med et tilbud hurtigst muligt.</p>
+        <!-- Tilføjet sektion med ekstra oplysning og link -->
+        <div class="mt-5">
+            <p>Har du yderligere spørgsmål? Tøv ikke med at kontakte os.</p>
+            <p><a href="mailto:kontakt@carport.dk">kontakt@carport.dk</a></p>
+        </div>
+    </div>
+</div>
+<!-- Footer sektion for ekstra information -->
+<div class="footer">
+    <p>&copy; 2024 Carport ApS | Alle rettigheder forbeholdes</p>
 </div>
 </body>
 </html>

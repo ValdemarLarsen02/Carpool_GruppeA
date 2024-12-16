@@ -12,24 +12,66 @@
     <style>
         html, body {
             height: 100%;
-        }
-
-        .content {
-            min-height: 100%;
             display: flex;
             flex-direction: column;
         }
 
-        .main {
-            flex: 1;
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url('https://source.unsplash.com/1920x1080/?business,office') center/cover no-repeat;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .services .card {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .services .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-dark-blue {
+            background-color: #003366;
+            color: white;
+        }
+
+        .btn-dark-blue:hover {
+            background-color: #002244;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #fff;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-<body class="d-flex flex-column">
-<!-- Navigation Bar -->
+<body>
+<!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Sælger Portal</a>
+    <div class="container">
+        <a class="navbar-brand" href="#">Sælger Portal</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -37,80 +79,71 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">Hjem</a>
+                    <a class="nav-link active" th:href="@{/}">Hjem</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/forespørgsler">Alle Forespørgsler</a>
+                    <a class="nav-link" th:href="@{/inquiries}">Alle Forespørgsler</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/ikke-tildelte">Ikke Tildelte</a>
+                    <a class="nav-link" th:href="@{/unassigned-inquiries}">Ikke Tildelte</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/afsendte-emails">Afsendte Emails</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/indkommende-emails">Modtagne Emails</a>
+                    <a class="nav-link" th:href="@{/email-management}">Emails</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Main Content -->
-<div class="content">
-    <div class="container main mt-5">
-        <div class="text-center">
-            <h1 class="mb-4">Velkommen til Sælger Portalen</h1>
-            <p class="lead">Administrér dine forespørgsler og emails effektivt.</p>
-        </div>
-        <div class="row text-center mt-5">
-            <!-- Card: Se Alle Forespørgsler -->
-            <div class="col-md-3">
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Velkommen til Sælger Portalen</h1>
+        <p class="lead">Administrér dine forespørgsler og emails effektivt.</p>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="services py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
                 <div class="card shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <h5 class="card-title">Se Alle Forespørgsler</h5>
-                        <p class="card-text">Gennemgå alle modtagne forespørgsler.</p>
-                        <a th:href="@{/inquiries}" class="btn btn-primary">Gå til</a>
+                        <p class="card-text">Gennemgå alle modtagne forespørgsler og opgaver.</p>
+                        <a th:href="@{/inquiries}" class="btn btn-dark-blue mt-auto">Gå til</a>
                     </div>
                 </div>
             </div>
-            <!-- Card: Ikke Tildelte -->
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Ikke Tildelte Forespørgsler</h5>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Ikke Tildelte</h5>
                         <p class="card-text">Fokusér på forespørgsler uden ansvarlig sælger.</p>
-                        <a th:href="@{/unassigned-inquiries}" class="btn btn-secondary">Gå til</a>
+                        <a th:href="@{/unassigned-inquiries}" class="btn btn-dark-blue mt-auto">Gå til</a>
                     </div>
                 </div>
             </div>
-            <!-- Card: Afsendte Emails -->
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Afsendte emails</h5>
-                        <p class="card-text">Oversigt over afsendte emails til kunder.</p>
-                        <a href="/afsendte-emails" class="btn btn-success">Gå til</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Card: Modtagne Emails -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Modtagne Emails</h5>
-                        <p class="card-text">Gennemgå alle indkommende emails.</p>
-                        <a href="/received-emails" class="btn btn-info text-white">Gå til</a>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Emails</h5>
+                        <p class="card-text">Administrér afsendte og modtagne emails.</p>
+                        <a th:href="@{/email-management}" class="btn btn-dark-blue mt-auto">Gå til</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Footer -->
-<footer class="bg-dark text-white text-center py-3">
-    <p class="mb-0">&copy; 2024 Sælger Portal. Alle rettigheder forbeholdes.</p>
+<footer class="text-center">
+    <div class="container">
+        <p>&copy; 2024 Sælger Portal. Alle rettigheder forbeholdes.</p>
+        <p><a href="#services">Tilbage til toppen</a></p>
+    </div>
 </footer>
 </body>
 </html>
