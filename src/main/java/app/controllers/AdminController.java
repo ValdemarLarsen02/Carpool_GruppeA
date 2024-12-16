@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.config.Admin;
 import app.models.Product;
 import app.services.ProductService;
 import app.utils.Scrapper;
@@ -12,23 +13,43 @@ import java.util.Map;
 
 public class AdminController {
 
+    private Admin admin;
+    private DatabaseController dbController;
+
+    public AdminController(Admin admin, DatabaseController dbController) {
+        this.dbController = dbController;
+        this.admin = admin;
+    }
+
     private final ProductService productService = new ProductService();
 
-    public static void registerRoutes(Javalin app) {
-        AdminController controller = new AdminController();
+    public void registerRoutes(Javalin app) {
 
         //Admin siden:
-        app.get("/admin", ctx -> controller.showAdminPage(ctx));
+        app.get("/admin", this::showAdminPage);
 
         // CRUD-operationer
-        app.post("/admin/product", ctx -> controller.createProduct(ctx));
-        app.post("/admin/product/update", ctx -> controller.updateProduct(ctx));
-        app.get("/admin/products", ctx -> controller.getAllProducts(ctx));
-        app.get("/admin/scrap", ctx -> controller.scrapExternalProducts(ctx));
-        app.post("/admin/product/delete", ctx -> controller.deleteProduct(ctx));
+        app.post("/admin/product", this::createProduct);
+        app.post("/admin/product/update", this::updateProduct);
+        app.get("/admin/products", this::getAllProducts);
+        app.get("/admin/scrap", this::scrapExternalProducts);
+        app.post("/admin/product/delete", this::deleteProduct);
+
+        app.get("/update-password", ctx -> ctx.render("/salesmen-password-management.html"));
+
+        app.post("/update-password", this::updatePassword);
+
+        app.get("/password-update-confirmation", ctx -> ctx.render("/password-update-confirmation.html"));
 
     }
 
+
+    private void updatePassword(Context ctx) {
+        String updatedPassword = ctx.formParam("password");
+        admin.UpdatePassword(updatedPassword);
+
+        ctx.render("/salesmen-password-management.html");
+    }
 
     private void showAdminPage(Context ctx) {
         List<Product> products = productService.getAllProducts();

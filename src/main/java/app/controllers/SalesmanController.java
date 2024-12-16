@@ -1,6 +1,6 @@
 package app.controllers;
 
-import app.Services.SalesmanService;
+import app.services.SalesmanService;
 import app.config.Admin;
 import app.config.Salesman;
 import io.javalin.Javalin;

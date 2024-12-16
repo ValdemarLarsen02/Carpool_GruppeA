@@ -1,6 +1,6 @@
 package app;
 
-import app.Services.*;
+import app.services.*;
 import app.config.*;
 import app.controllers.*;
 import app.utils.RequestParser;
@@ -45,7 +45,7 @@ public class Main {
         salesmanController.registerRoutes(app);
         inquiryController.registerRoutes(app);
         emailController.registerRoutes(app);
-        adminController.RegisterRoutes(app);
+        adminController.registerRoutes(app);
 
 
     }

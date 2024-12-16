@@ -1,6 +1,6 @@
 package app.config;
 
-import app.Services.ErrorLoggerService;
+import app.services.ErrorLoggerService;
 import app.controllers.DatabaseController;
 
 import java.awt.image.DataBuffer;
