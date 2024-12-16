@@ -1,9 +1,10 @@
 const { JSDOM } = require("jsdom");
+
 describe("Carport Drawing Tests", () => {
     let document, window;
 
     beforeEach(() => {
-        // Set up the virtual DOM with all necessary elements for your test
+        // Opsæt den virtuelle DOM med alle nødvendige elementer til testen
         const dom = new JSDOM(`
             <!DOCTYPE html>
             <html>
@@ -11,89 +12,91 @@ describe("Carport Drawing Tests", () => {
                     <input id="carportWidth" value="400" />
                     <input id="shedWidth" value="200" />
                     <input id="shedLength" value="300" />
-                    <input id="carportLength" value="600" /> <!-- Make sure this input is here -->
+                    <input id="carportLength" value="600" /> <!-- Sørg for at dette input er her -->
                     <svg id="carportSketch"></svg>
                     <button id="activateMovement">Aktiver pil-bevægelse</button>
                 </body>
             </html>
         `);
 
-        // Assign the virtual DOM's document and window objects to global
+        // Tildel den virtuelle DOMs dokument og vinduesobjekter til globalt
         document = dom.window.document;
         window = dom.window;
 
         global.document = document;
         global.window = window;
 
-        // Mock your carport.js script after the DOM is set up
-        require("../src/main/resources/public/js/carport.js");  // Ensure the path is correct
+        // Mock dit carport.js script efter at DOM er sat op
+        require("../src/main/resources/public/js/carport.js");  // Sørg for at stien er korrekt
     });
 
-    test("SVG should contain a carport rectangle", () => {
+    test("SVG skal indeholde et carport-rektangel", () => {
         const svgElement = document.getElementById("carportSketch");
         const rectangles = svgElement.getElementsByTagName("rect");
 
-        // Expect at least one rectangle (the carport) to be present
+        // Forvent mindst ét rektangel (carport) er til stede
         expect(rectangles.length).toBeGreaterThan(0);
     });
 
-
-    test("Shed width change triggers carport redraw", () => {
+    test("Ændring af skur-bredde udløser en gen-tegning af carporten", () => {
         const shedWidthInput = document.getElementById("shedWidth");
 
-        // Change the shedWidth input value and simulate the change event
-        shedWidthInput.value = "500";  // New width value
+        // Ændre værdien af skur-bredde input og simulere ændringsbegivenheden
+        shedWidthInput.value = "500";  // Ny breddeværdi
         shedWidthInput.dispatchEvent(new window.Event("change"));
 
-        // Ensure the event listener is triggered and value is updated
+        // Sørg for at begivenhedslytter bliver udløst og værdien opdateres
         expect(shedWidthInput.value).toBe("500");
 
-        // Additional checks can be added based on your `drawCarport()` logic
+        // Yderligere kontroller kan tilføjes baseret på din 'drawCarport()' logik
     });
 
-    test("Carport length change triggers carport redraw", () => {
+    test("Ændring af carport-længde udløser en gen-tegning af carporten", () => {
         const carportLengthInput = document.getElementById("carportLength");
 
-        // Change the carportLength input value and simulate the change event
-        carportLengthInput.value = "700";  // New length value
+        // Ændre værdien af carport-længde input og simulere ændringsbegivenheden
+        carportLengthInput.value = "700";  // Ny længdeværdi
         carportLengthInput.dispatchEvent(new window.Event("change"));
 
-        // Ensure the event listener is triggered and value is updated
+        // Sørg for at begivenhedslytter bliver udløst og værdien opdateres
         expect(carportLengthInput.value).toBe("700");
 
-        // Additional checks can be added based on your `drawCarport()` logic
+        // Yderligere kontroller kan tilføjes baseret på din 'drawCarport()' logik
     });
-    test("Activate movement button triggers expected behavior", () => {
+
+    test("Aktiver bevægelse knap udløser den forventede adfærd", () => {
         const activateButton = document.getElementById("activateMovement");
 
-        // Mock a function or behavior triggered by the button
+        // Mock en funktion eller adfærd der udløses af knappen
         const mockFunction = jest.fn();
         activateButton.addEventListener("click", mockFunction);
 
-        // Simulate the button click event
+        // Simulere knap-klik begivenheden
         activateButton.dispatchEvent(new window.Event("click"));
 
-        // Check if the mock function was called
+        // Tjek om den mockede funktion blev kaldt
         expect(mockFunction).toHaveBeenCalled();
     });
-    test("Arrow key movement changes shed position", () => {
-        // Mock the initial state of the shed position
+
+    test("Pil-tast bevægelse ændrer skur-position", () => {
+        // Mock den oprindelige tilstand af skur-positionen
         const initialPosition = { shedX: 100, shedY: 200 };
 
-        // Assume the arrow key press moves the shed
+        // Antag at pil-tast tryk flytter skuret
         const mockMoveShed = jest.fn(() => {
             initialPosition.shedX += 10;
         });
 
-        // Attach your mock move function to the keydown event
+        // Tilknyt den mockede bevægelsesfunktion til keydown begivenheden
         window.addEventListener("keydown", mockMoveShed);
         window.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight" }));
 
-        // Check if the shed position changed after the arrow key event
+        // Tjek om skur-positionen ændrede sig efter pil-tast begivenheden
         expect(mockMoveShed).toHaveBeenCalled();
-        expect(initialPosition.shedX).toBeGreaterThan(100); // Assert movement occurred
+        expect(initialPosition.shedX).toBeGreaterThan(100); // Bekræft at der er sket bevægelse
     });
-    test("Arrow key movement handles multiple directions", () => {
+
+    test("Pil-tast bevægelse håndterer flere retninger", () => {
         const initialPosition = { shedX: 100, shedY: 200 };
         const mockMoveShed = jest.fn((direction) => {
             if (direction === "ArrowRight") initialPosition.shedX += 10;
@@ -104,12 +107,12 @@ describe("Carport Drawing Tests", () => {
             mockMoveShed(event.key);
         });
 
-        // Move right
+        // Bevæg højre
         window.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight" }));
         expect(initialPosition.shedX).toBeGreaterThan(100);
 
-        // Move left
+        // Bevæg venstre
         window.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowLeft" }));
-        expect(initialPosition.shedX).toBeLessThan(110); // after moving right, it should be < 110
+        expect(initialPosition.shedX).toBeLessThan(110); // efter at have bevæget sig til højre, skal det være < 110
     });
 });
