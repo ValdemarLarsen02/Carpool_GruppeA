@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carport Oversigt</title>
-    <!-- Bootstrap CSS -->
+    <!-- Tilføj Bootstrap CSS for at gøre siden responsiv og flot -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Carport Oversigt</h1>
 
-    <!-- Sorteringsmuligheder -->
+    <!-- Sektion til sorteringsmuligheder -->
     <div class="mb-4">
         <h5>Sortér efter:</h5>
         <div class="row">
+            <!-- Dropdown til at vælge højde -->
             <div class="col-md-4">
                 <label for="sortHeight" class="form-label">Højde</label>
                 <select id="sortHeight" class="form-select">
@@ -23,6 +24,7 @@
                     <option value="high">Høj (over 2m)</option>
                 </select>
             </div>
+            <!-- Dropdown til at vælge bredde -->
             <div class="col-md-4">
                 <label for="sortWidth" class="form-label">Bredde</label>
                 <select id="sortWidth" class="form-select">
@@ -31,6 +33,7 @@
                     <option value="large">Bred (over 3m)</option>
                 </select>
             </div>
+            <!-- Dropdown til at vælge tilvalg -->
             <div class="col-md-4">
                 <label for="sortExtras" class="form-label">Tilvalg</label>
                 <select id="sortExtras" class="form-select">
@@ -43,12 +46,12 @@
         </div>
     </div>
 
-    <!-- Liste over carporte -->
+    <!-- Sektion hvor carporte vises dynamisk -->
     <div class="row" id="carportList">
-        <!-- Carport-kortene bliver genereret dynamisk -->
+        <!-- Kort til carporte bliver genereret her via JavaScript -->
     </div>
 
-    <!-- Knappen til at designe sin egen carport -->
+    <!-- Knap til at designe sin egen carport -->
     <div class="text-center mt-5">
         <a id="customCarportButton" href="#" class="btn btn-success btn-lg">Design min egen carport</a>
     </div>
@@ -57,16 +60,16 @@
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Dynamisk logik -->
+<!-- Dynamisk JavaScript logik -->
 <script>
-    // Variabel til din knappens HTML-side-link
-    const customCarportPage = "design_min_carport.html"; // Her ændrer du navnet på den side som knappen skal linke til
+    // Variabel til din kammerats HTML-side (ændres til filnavnet på siden)
+    const customCarportPage = "design_min_carport.html";
 
-    // Opdaterer knappen "Design min egen carport" til at pege på den rigtige side
+    // Knap til at navigere til kammeratens side
     const customCarportButton = document.getElementById('customCarportButton');
     customCarportButton.href = customCarportPage;
 
-    // Carport data
+    // Array med data for carporte
     const carportData = [
         { id: 1, title: "Carport 1", height: 1.8, width: 2.9, extras: "shed", roofType: "Fladt tag", price: 20000, image: "https://via.placeholder.com/300x200" },
         { id: 2, title: "Carport 2", height: 2.8, width: 4.0, extras: "flatRoof", roofType: "Fladt tag", price: 35000, image: "https://via.placeholder.com/300x200" },
@@ -76,12 +79,13 @@
         { id: 6, title: "Carport 6", height: 3.2, width: 6.0, extras: "flatRoof", roofType: "Fladt tag", price: 50000, image: "https://via.placeholder.com/300x200" }
     ];
 
+    // Element hvor carportene bliver vist
     const carportList = document.getElementById('carportList');
 
-    // Function to render carports
+    // Funktion til at vise carporte
     function renderCarports(data) {
-        carportList.innerHTML = ''; // Clear existing carports
-        data.forEach(carport => {
+        carportList.innerHTML = ''; // Tøm listen over carporte, så vi kan vise en opdateret liste uden dubletter
+        data.forEach(carport => {    // Gå gennem hver carport i data og tilføj den som et kort
             const carportElement = `
                 <div class="col-md-4 mb-4">
                     <div class="card">
@@ -96,47 +100,48 @@
                     </div>
                 </div>
             `;
-            carportList.innerHTML += carportElement;
+            carportList.innerHTML += carportElement;  // Tilføj carport-elementet til listen
         });
     }
 
-    // Initial render
+    // Vis carporte første gang siden indlæses
     renderCarports(carportData);
 
-    // Filter logic
+    // Filtreringslogik
     const filters = {
         sortHeight: 'any',
         sortWidth: 'any',
         sortExtras: 'any'
     };
 
+    // Anvend filtre og opdater visning
     function applyFilters() {
         let filteredData = carportData;
 
-        // Filter by height
+        // Filtrér efter højde
         if (filters.sortHeight !== 'any') {
             const maxHeight = filters.sortHeight === 'low' ? 2 : Infinity;
             const minHeight = filters.sortHeight === 'high' ? 2 : -Infinity;
             filteredData = filteredData.filter(c => c.height >= minHeight && c.height <= maxHeight);
         }
 
-        // Filter by width
+        // Filtrér efter bredde
         if (filters.sortWidth !== 'any') {
             const maxWidth = filters.sortWidth === 'small' ? 3 : Infinity;
             const minWidth = filters.sortWidth === 'large' ? 3 : -Infinity;
             filteredData = filteredData.filter(c => c.width >= minWidth && c.width <= maxWidth);
         }
 
-        // Filter by extras
+        // Filtrér efter tilvalg
         if (filters.sortExtras !== 'any') {
             filteredData = filteredData.filter(c => c.extras === filters.sortExtras);
         }
 
-        // Render filtered carports
+        // Opdater visning med filtrerede data
         renderCarports(filteredData);
     }
 
-    // Event listeners for filters
+    // Event listeners til dropdown-menuer
     document.getElementById('sortHeight').addEventListener('change', (event) => {
         filters.sortHeight = event.target.value;
         applyFilters();
