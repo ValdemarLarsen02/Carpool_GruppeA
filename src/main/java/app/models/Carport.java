@@ -8,7 +8,7 @@ public class Carport {
     private String dimensions;
     private BigDecimal price;
 
-    // Getters and Setters
+    // Getters og Setters
     public int getId() {
         return id;
     }

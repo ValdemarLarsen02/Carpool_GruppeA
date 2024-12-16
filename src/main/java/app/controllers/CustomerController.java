@@ -14,7 +14,7 @@ public class CustomerController {
         this.dbController = dbController;
     }
 
-    // Create Profile
+    // Opret profil
     public void createProfile(Context ctx) {
         String query = "INSERT INTO kunde (name, email, password) VALUES (?, ?, ?)";
         try (Connection connection = dbController.getConnection();
@@ -56,7 +56,7 @@ public class CustomerController {
         }
     }
 
-    // Update Profile
+    // Updater Profil
     public void updateProfile(Context ctx) {
         String query = "UPDATE kunde SET name = ?, password = ? WHERE email = ?";
         try (Connection connection = dbController.getConnection();
@@ -77,7 +77,7 @@ public class CustomerController {
         }
     }
 
-    // View Order Status
+    // Se order status
     public void viewOrderStatus(Context ctx) {
         String query = "SELECT status FROM orders WHERE customer_id = ? AND active = true";
         try (Connection connection = dbController.getConnection();

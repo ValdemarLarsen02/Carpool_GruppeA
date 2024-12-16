@@ -11,42 +11,49 @@ import app.controllers.InquiryController;
 
 public class Main {
     public static void main(String[] args) {
-        // Initialize DatabaseController
+        // Opret en DatabaseController, som håndterer forbindelsen til databasen
         DatabaseController dbController = new DatabaseController();
-        dbController.initialize(); // Initializes the connection pool
+        dbController.initialize(); // Initialiserer connection poolen for databasen
 
-        // Initialize controllers
+        // Opret controllere til at håndtere forskellige funktionaliteter
         CustomerController customerController = new CustomerController(dbController);
         InquiryController inquiryController = new InquiryController(dbController);
 
 
-        // Start Javalin server
+        // Start Javalin serveren
         Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public", Location.CLASSPATH); // Serve static files
+            config.staticFiles.add("/public", Location.CLASSPATH); // Finder filer i "resources/public"
         }).start(8080);
 
-        // Register routes
-      
-        // Define Thymeleaf HTML routes
+        // Thymeleaf-ruter til at vise HTML-sider
+        // Disse ruter viser HTML-sider til brugeren
         app.get("/", ctx -> ctx.html(renderThymeleaf("index", new Context())));
         app.get("/customer", ctx -> ctx.html(renderThymeleaf("customer", new Context())));
         app.get("/order-status", ctx -> ctx.html(renderThymeleaf("order-status", new Context())));
         app.get("/payment", ctx -> ctx.html(renderThymeleaf("payment", new Context())));
 
-        // Define API routes
+        // API-ruter til at håndtere backend-funktionalitet
+        // Disse ruter håndterer klientens anmodninger og udfører databaseoperationer
         app.post("/api/create-customer", customerController::createProfile);
         app.post("/api/login", customerController::login);
         app.put("/api/update-customer", customerController::updateProfile);
-
+        // Forespørgsler på ordrestatus
         app.get("/api/order-status/{customerId}", inquiryController::getOrderStatus);
 
-        // Graceful shutdown
+        // Opret en shutdown-hook for at sikre en ordentlig lukning af ressourcer
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            dbController.close(); // Close the database connection pool on shutdown
+            dbController.close(); // Luk databaseforbindelserne, når serveren stoppes
         }));
     }
 
-    // Helper method for rendering Thymeleaf templates
+    /**
+     * En hjælpefunktion til at rendere Thymeleaf-skabeloner.
+     * Denne funktion bruges til at generere HTML-sider baseret på Thymeleaf-skabeloner.
+     *
+     * @param template Navn på Thymeleaf-skabelonen (uden filtypen .html)
+     * @param context  Context-objektet, der bruges til at levere data til skabelonen
+     * @return Renderet HTML som en streng
+     */
     private static String renderThymeleaf(String template, Context context) {
         TemplateEngine engine = ThymeleafConfig.templateEngine();
         return engine.process(template, context);

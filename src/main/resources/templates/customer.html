@@ -10,10 +10,10 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Customer Management</h1>
 
-    <!-- Feedback Message -->
+    <!-- Feedback beskeder -->
     <div id="responseMessage" class="alert" style="display: none;"></div>
 
-    <!-- Create Profile Section -->
+    <!--formular til at oprette en ny brugerprofil -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
             <h2>Create Profile</h2>
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <!-- Login Section -->
+    <!-- formular til at logge ind -->
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
             <h2>Login</h2>
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <!-- Update Profile Section -->
+    <!-- formular til at opdatere brugerens profil -->
     <div class="card mb-4">
         <div class="card-header bg-warning text-dark">
             <h2>Update Profile</h2>
@@ -89,7 +89,7 @@
 <script>
     const API_BASE_URL = "http://localhost:8080";
 
-    // Utility function to display messages
+    // Funktion til at vise feedbackmeddelelser
     function displayMessage(message, type = "success") {
         const messageBox = document.getElementById("responseMessage");
         messageBox.style.display = "block";
@@ -97,7 +97,7 @@
         messageBox.textContent = message;
     }
 
-    // Handle API requests
+    // Funktion til at håndtere API-anmodninger
     async function handleRequest(url, method, data) {
         try {
             const response = await fetch(url, {
@@ -118,7 +118,7 @@
         }
     }
 
-    // Create Profile
+    // Opret profil
     document.getElementById("create-customer-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const customer = {
@@ -139,7 +139,7 @@
         await handleRequest(`${API_BASE_URL}/login`, "POST", customer);
     });
 
-    // Update Profile
+    // Updater Profile
     document.getElementById("update-profile-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const customer = {
