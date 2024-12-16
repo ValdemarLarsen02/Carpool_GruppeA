@@ -243,3 +243,4 @@ document.getElementById("shedLength").addEventListener("change", (event) => {
 });
 // Initial carport drawing
 drawCarport();
+module.exports = { drawCarport, drawVerticalLines };
