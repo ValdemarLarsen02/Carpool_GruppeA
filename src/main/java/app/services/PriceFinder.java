@@ -31,7 +31,6 @@ public class PriceFinder {
         if (products.isEmpty()) {
             products = scrapper.searchProducts(searchTerm);
         }
-        System.out.println(products.toString());
 
         return products;
     }

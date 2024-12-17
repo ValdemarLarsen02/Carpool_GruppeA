@@ -31,14 +31,14 @@ public class Main {
         SalesmanService salesmanService = new SalesmanService(errorLogger, dbController);
         Admin admin = new Admin(errorLogger, dbController);
         AdminController adminController = new AdminController(admin, dbController);
-
+        SVGController svgController = new SVGController();
 
 
 
         // Routing
-        //app.get("/", ctx -> ctx.render("index.html"));
+        app.get("/", ctx -> ctx.render("index.html"));
 
-        app.get("/", ctx -> ctx.render("carport_oversigt.html"));
+        app.get("/oversigt", ctx -> ctx.render("carport_oversigt.html"));
 
 
         app.get("/test", ctx -> ctx.render("payment.html"));
@@ -50,6 +50,7 @@ public class Main {
         inquiryController.registerRoutes(app);
         emailController.registerRoutes(app);
         adminController.registerRoutes(app);
+        svgController.registerRoutes(app); // Tegning af svg'er
 
 
     }

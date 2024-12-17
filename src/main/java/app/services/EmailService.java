@@ -24,10 +24,10 @@ public class EmailService {
     }
 
 
-    private static final String SMTP_HOST = "smtp.mailersend.net";
-    private static final String SMTP_PORT = "587";
-    private static final String USERNAME = "MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net";
-    private static final String PASSWORD = "MKWpmxZ3tS2bO2Pd";
+    private static final String SMTP_HOST = "mail.smtp2go.com";
+    private static final String SMTP_PORT = "2525";
+    private static final String USERNAME = "cphbusiness.dk";
+    private static final String PASSWORD = "m29sI48YWo1noeEc";
 
     public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry, String recipient) {
         // Opretter session til at sende mailen
@@ -48,9 +48,10 @@ public class EmailService {
 
             // Opret emailen
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("MS_Q87gIR@trial-vywj2lpm2y1l7oqz.mlsender.net")); // Opdater til din e-mail
+            message.setFrom(new InternetAddress("fog@vascripts.store")); // Opdater til din e-mail
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient)); // Opdater modtageren
             message.setSubject("Ny forespørgsel om carport");
+
 
             // Byg emailens indhold
             String emailContent = buildInquiryEmailContent(customer, inquiry);
@@ -93,7 +94,8 @@ public class EmailService {
         content.append("<p><strong>Carport Bredde:</strong> ").append(inquiry.getCarportWidth()).append(" m</p>");
         content.append("<p><strong>Redskabsskur længde:</strong> ").append(inquiry.getShedLength()).append(" m</p>");
         content.append("<p><strong>Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" m</p>");
-
+        content.append("<h2>Opdatering fra sælger:</h2>");
+        content.append("<p><strong>Kommentar fra sælger: </strong> ").append(inquiry.getComments()).append("</p>");
         // Footer
         content.append("<p>Tak for din forespørgsel! Vi vender tilbage hurtigst muligt.</p>");
 

@@ -1,19 +1,20 @@
 package app.controllers;
 
-import app.services.CustomerService;
-import app.services.InquiryService;
-import app.services.SalesmanService;
+import app.models.Material;
+import app.models.PartsList;
+import app.services.*;
 import app.config.Customer;
 import app.config.Email;
 import app.config.Inquiry;
 import app.persistence.InquiryMapper;
 import app.utils.RequestParser;
+import app.utils.SessionUtils;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import app.config.Salesman;
-import app.services.EmailService;
 import app.utils.DropdownOptions;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -48,13 +49,24 @@ public class InquiryController {
 
         app.post("/submit-inquiry", this::submitInquiry);
         app.get("/unassigned-inquiries", this::showUnassignedInquiries);
-        app.get("/sales-portal", ctx -> ctx.render("sales-portal.html"));
+        app.get("/sales-portal", this::loadSellerPortal);
         app.post("/assign-salesman", this::assignSalesmanToInquiry);
         app.get("/inquiries", this::showAllInquiries);
         app.get("/show-edit-inquiry-form", this::showEditInquiryForm);
         app.post("/edit-inquiry", this::editInquiry);
         app.get("/customer-info/{id}", this::showCustomerInfo);
 
+        //Slet af forespørgelser
+        app.post("/delete-inquiry", this::deleteInquiry);
+
+
+    }
+
+
+
+    public void loadSellerPortal(Context ctx) {
+        SessionUtils.ensureAdminAccess(ctx); //Tjekker der er sat korrekt session data.
+        ctx.render("sales-portal.html");
     }
 
     public void showCustomerInfo(Context ctx) {
@@ -70,9 +82,15 @@ public class InquiryController {
     }
 
 
+
+
     public void showAllInquiries(Context ctx) {
+        SessionUtils.ensureAdminAccess(ctx); //Tjekker der er sat korrekt session data.
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase();
 
+
+        System.out.println("Antal forespørgsler: " + inquiries.size());
+        System.out.println(inquiries);
         ctx.render("inquiries.html", Map.of("inquiries", inquiries));
     }
 
@@ -100,6 +118,7 @@ public class InquiryController {
 
     //Viser alle forespørgsler uden en sælger tilknyttet
     public void showUnassignedInquiries(Context ctx) {
+        SessionUtils.ensureAdminAccess(ctx); //Tjekker der er sat korrekt session data.
         List<Inquiry> inquiries = inquiryService.getInquiriesFromDatabase();
 
         // Filtrér inquiries, der ikke har en sælger
@@ -120,7 +139,7 @@ public class InquiryController {
 
             // Gem kunden og forespørgslen via services
             inquiryService.saveInquiryWithCustomer(inquiry, customer);
-
+            System.out.println(inquiry);
             // Render bekræftelsessiden
             ctx.render("inquiry-confirmation.html", Map.of("customerName", customer.getName(), "carportLength", inquiry.getCarportLength(), "carportWidth", inquiry.getCarportWidth(), "shedLength", inquiry.getShedLength() != null ? inquiry.getShedLength() : "Ingen", "shedWidth", inquiry.getShedWidth() != null ? inquiry.getShedWidth() : "Ingen", "comments", inquiry.getComments() != null ? inquiry.getComments() : "Ingen", "status", inquiry.getStatus()));
         } catch (IllegalArgumentException e) {
@@ -154,7 +173,7 @@ public class InquiryController {
             emailService.sendCustomerInquiryEmail(customer, inquiry, recipient);
             emailService.saveEmailsToDatabase(inquiry, customer, dbController);
 
-
+            showAllInquiries(ctx); //viser vores liste igen her.
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -166,8 +185,72 @@ public class InquiryController {
         Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
         inquiryService.getCustomerByInquiryId(inquiryId);
 
-        ctx.render("edit-inquiry.html", Map.of("inquiry", inquiry));
+
+        System.out.println(inquiry);
+
+
+        //Opretter en tegning af valgte carport
+        CarportSVG carportSVG = new CarportSVG(
+                inquiry.getCarportWidth() != null ? inquiry.getCarportWidth().intValue() : 0,
+                inquiry.getCarportLength() != null ? inquiry.getCarportLength().intValue() : 0,
+                inquiry.getShedWidth() != null ? inquiry.getShedWidth().intValue() : 0,
+                inquiry.getShedLength() != null ? inquiry.getShedLength().intValue() : 0
+        );
+
+        String svgOutPut = carportSVG.generateSVG();
+
+
+        //Opretter en stykliste til valgte carport
+        PartsListGenerator partsListGenerator = new PartsListGenerator(inquiry.getCarportLength(), inquiry.getCarportWidth(), 500);
+        PartsList partsList = partsListGenerator.getPartsList(); // Hent stykliste
+        BigDecimal totalCost = partsList.getTotalCost();         // Hent totalpris
+
+        System.out.println(partsList);
+
+
+        List<Material> materials = partsListGenerator.getPartsList().getMaterials(); // henter listen med vores matrialer
+
+        ctx.render("edit-inquiry.html", Map.of(
+                "inquiry", inquiry,           // Din eksisterende inquiry-objekt
+                "svgOutput", svgOutPut,       // SVG som en string
+                "partsList", materials, // Stykliste
+                "totalPrice", totalCost // Samlet pris (forudsat en metode til dette)
+        ));
+
+
     }
+
+
+    public void deleteInquiry(Context ctx) {
+        // Henter vores id fra vores form.
+        String idParam = ctx.formParam("id");
+
+        // Validering på om id findes?
+        if (idParam != null && !idParam.isEmpty()) {
+            System.out.println("Sletning af forespørgsel med ID: " + idParam);
+
+            // Laves om til korrekt datatype.
+            int id = Integer.parseInt(idParam);
+
+
+            boolean isDeleted = inquiryService.deleteInquiryById(id);
+
+            if (isDeleted) {
+                System.out.println("Forespørgsel blev slettet, redirecter...");
+                // Redirect til siden med alle forespørgsler
+                ctx.redirect("/inquiries");
+            } else {
+                System.out.println("Sletning fejlede.");
+                ctx.status(500).result("Fejl ved sletning af forespørgsel.");
+            }
+
+
+        } else {
+            System.out.println("ID mangler i slette-anmodningen.");
+            ctx.status(400).result("ID mangler i forespørgslen.");
+        }
+    }
+
 
 
 }

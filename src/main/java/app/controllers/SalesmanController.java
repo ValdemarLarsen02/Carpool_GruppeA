@@ -35,6 +35,13 @@ public class SalesmanController {
         app.get("/create-salesman", ctx -> ctx.render("/create-salesman.html"));
         app.post("/create-salesman", this::createSalesman);
         app.get("/salesman-creation-confirmation", ctx -> ctx.render("/salesman-creation-confirmation.html"));
+
+        app.post("/salesman-logout", ctx -> {
+            ctx.sessionAttribute("salesman", null);
+            ctx.sessionAttribute("role", null);
+            ctx.redirect("/salesman-login"); // Redirecter til login-siden
+        });
+
     }
 
     public void createSalesman(Context ctx) {
@@ -50,14 +57,17 @@ public class SalesmanController {
     public void handleSalesmanLogin(Context ctx) {
 
         inquiryController.showSalesmenDropdown();
-        String selectedSalesman = ctx.formParam("salesman");
+        String selectedSalesman = ctx.formParam("salesmanId");
         String password = ctx.formParam("password");
 
         String correctPassword = admin.getPassword();
 
         if (correctPassword != null && correctPassword.equals(password)) {
+
+            System.out.println("Valgte sælger: " + selectedSalesman);
             ctx.sessionAttribute("salesman", selectedSalesman);
-            ctx.render("sales-portal.html");
+            ctx.sessionAttribute("role", "seller");
+            ctx.redirect("/sales-portal");
         } else {
             ctx.status(400).result("Forkert kodeord");
         }

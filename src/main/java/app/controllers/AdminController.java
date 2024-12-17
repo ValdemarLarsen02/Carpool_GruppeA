@@ -59,7 +59,6 @@ public class AdminController {
     private void createProduct(Context ctx) {
         Product product = ctx.bodyAsClass(Product.class);
 
-        System.out.println(product);
         productService.createProduct(product);
         ctx.redirect("/admin");
     }

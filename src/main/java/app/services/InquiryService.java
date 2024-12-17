@@ -393,4 +393,25 @@ public class InquiryService {
         return email;
     }
 
+
+    public boolean deleteInquiryById(int inquiryId) {
+        String query = "DELETE FROM inquiries WHERE id = ?";
+        try (Connection connection = dbController.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, inquiryId);
+
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Returner true, hvis mindst én række blev slettet
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            String errorMessage = "Fejl da forespørgsel skulle slettes | METODE: deleteInquiryById";
+            errorLogger.logError(errorMessage, "HIGH", e);
+            return false;
+        }
+    }
+
 }

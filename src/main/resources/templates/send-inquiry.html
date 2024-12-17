@@ -6,106 +6,134 @@
     <title>Carport Forespørgsel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        svg {
-            border: 1px solid black;
-            width: 800px;
-            height: 600px;
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .full-height {
+            height: 100vh; /* Fuld viewport højde */
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        canvas {
+            border: 1px solid #000;
             background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1>Forespørgsel på Carport</h1>
-    <form method="POST" action="/submit-inquiry" id="carportForm">
-        <!-- Bredde -->
-        <div class="mb-3">
-            <label for="carportWidth" class="form-label">Bredde på Carport (cm)</label>
-            <select name="carportWidth" id="carportWidth" class="form-select">
-                <th:block th:each="option : ${carportWidthOptions}">
-                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
-                </th:block>
-            </select>
-        </div>
-        <!-- Længde -->
-        <div class="mb-3">
-            <label for="carportLength" class="form-label">Længde på Carport (cm)</label>
-            <select name="carportLength" id="carportLength" class="form-select">
-                <th:block th:each="option : ${carportLengthOptions}">
-                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
-                </th:block>
-            </select>
-        </div>
-        <!-- Redskabsskur længde -->
-        <div class="mb-3">
-            <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
-            <select name="shedLength" id="shedLength" class="form-select">
-                <option value="">Uden redskabsskur</option>
-                <th:block th:each="option : ${shedLengthOptions}">
-                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
-                </th:block>
-            </select>
-        </div>
-        <!-- Redskabsskur bredde -->
-        <div class="mb-3">
-            <label for="shedWidth" class="form-label">Bredde på redskabsrum (cm)</label>
-            <select name="shedWidth" id="shedWidth" class="form-select">
-                <option value="">Uden redskabsskur</option>
-                <th:block th:each="option : ${shedWidthOptions}">
-                    <option th:value="${option}" th:text="${option} + ' cm'"></option>
-                </th:block>
-            </select>
+<div class="container-fluid full-height">
+    <div class="row full-height">
+        <!-- Venstre kolonne: Formular -->
+        <div class="col-md-6 bg-light p-4 overflow-auto">
+            <h1>Forespørgsel på Carport</h1>
+            <form method="POST" action="/submit-inquiry" id="carportForm">
+                <!-- Bredde -->
+                <div class="mb-3">
+                    <label for="carportWidth" class="form-label">Bredde på Carport (cm)</label>
+                    <select name="carportWidth" id="carportWidth" class="form-select">
+                        <th:block th:each="option : ${carportWidthOptions}">
+                            <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <!-- Længde -->
+                <div class="mb-3">
+                    <label for="carportLength" class="form-label">Længde på Carport (cm)</label>
+                    <select name="carportLength" id="carportLength" class="form-select">
+                        <th:block th:each="option : ${carportLengthOptions}">
+                            <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <!-- Redskabsskur længde -->
+                <div class="mb-3">
+                    <label for="shedLength" class="form-label">Længde på redskabsrum (cm)</label>
+                    <select name="shedLength" id="shedLength" class="form-select">
+                        <option value="">Uden redskabsskur</option>
+                        <th:block th:each="option : ${shedLengthOptions}">
+                            <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <!-- Redskabsskur bredde -->
+                <div class="mb-3">
+                    <label for="shedWidth" class="form-label">Bredde på redskabsrum (cm)</label>
+                    <select name="shedWidth" id="shedWidth" class="form-select">
+                        <option value="">Uden redskabsskur</option>
+                        <th:block th:each="option : ${shedWidthOptions}">
+                            <option th:value="${option}" th:text="${option} + ' cm'"></option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <!-- Personlige oplysninger -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">Navn</label>
+                    <input type="text" name="name" id="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Adresse</label>
+                    <input type="text" name="address" id="address" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="zipcode" class="form-label">Postnummer</label>
+                    <input type="text" name="zipcode" id="zipcode" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="city" class="form-label">By</label>
+                    <input type="text" name="city" id="city" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Telefon</label>
+                    <input type="text" name="phone" id="phone" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="email" id="email" class="form-control">
+                </div>
+                <!-- Kommentarer -->
+                <div class="mb-3">
+                    <label for="comments" class="form-label">Kommentarer</label>
+                    <textarea name="comments" id="comments" class="form-control"></textarea>
+                </div>
+                <!-- Send-knap -->
+                <button type="submit" class="btn btn-primary">Send forespørgsel</button>
+                <button id="fetchTegning" class="btn btn-warning">Opret Tegning</button>
+            </form>
         </div>
 
-        <!-- Personlige oplysninger -->
-        <div class="mb-3">
-            <label for="name" class="form-label">Navn</label>
-            <input type="text" name="name" id="name" class="form-control" required>
+        <!-- Højre kolonne: Tegning -->
+        <div class="col-md-6 p-4">
+            <!-- Et sted til at vise SVG-tegningen -->
+            <div id="svgContainer"></div>
         </div>
-        <div class="mb-3">
-            <label for="address" class="form-label">Adresse</label>
-            <input type="text" name="address" id="address" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label for="zipcode" class="form-label">Postnummer</label>
-            <input type="text" name="zipcode" id="zipcode" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label for="city" class="form-label">By</label>
-            <input type="text" name="city" id="city" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label for="phone" class="form-label">Telefon</label>
-            <input type="text" name="phone" id="phone" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control">
-        </div>
-        <!-- Kommentarer -->
-        <div class="mb-3">
-            <label for="message" class="form-label">Kommentarer</label>
-            <textarea name="message" id="message" class="form-control"></textarea>
-        </div>
-        <!-- Send-knap -->
-        <button type="submit" class="btn btn-primary">Send forespørgsel</button>
-    </form>
-
-    <div class="mt-5">
-        <h3>Din Carport Tegning</h3>
-        <svg id="carportSketch"></svg>
-        <button id="activateMovement" class="btn btn-secondary mt-3">Aktiver pil-bevægelse</button>
     </div>
 </div>
-
-
-<!-- JavaScript -->
-<script src="/js/carport.js"></script>
 <script>
-    // JavaScript logic goes here
-    document.getElementById("carportForm").addEventListener("change", drawCarport);
-    drawCarport();
-    drawGrid(sketch);
+    //Sender data til backend via js for at undgå at bruge et form.
+    document.getElementById("fetchTegning").addEventListener("click", function() {
+        fetch("/generate-svg", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                carportWidth: document.getElementById("carportWidth").value,
+                carportLength: document.getElementById("carportLength").value,
+                shedWidth: document.getElementById("shedWidth").value,
+                shedLength: document.getElementById("shedLength").value
+            })
+        })
+            .then(response => response.text())
+            .then(svg => {
+                document.getElementById("svgContainer").innerHTML = svg;
+            })
+            .catch(error => console.error("FEJL: ", error));
+
+    });
 </script>
 </body>
 </html>

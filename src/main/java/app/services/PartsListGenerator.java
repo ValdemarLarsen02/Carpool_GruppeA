@@ -25,7 +25,7 @@ public class PartsListGenerator {
 
 
     public PartsListGenerator(double length, double width, double height) {
-        Material rafters = calculateRafters(length, width);
+        Material rafters = calculateRafters(width);
         Material Straps = calculateStraps(length, width);
         Material poles = calculatePoles(length, height);
         partsList.addMaterial(rafters);
@@ -34,41 +34,73 @@ public class PartsListGenerator {
     }
 
 
-    public Material calculateRafters(double length, double width) {
-        String searchTerm = String.format("47X200 MM SPÆRTRÆ C24 HØVLET TIL 45X195MM - 70%% PEFC - %.0fcm", width);
-        if (width > maxRafterLength) {
-            throw new IllegalArgumentException("Bredden overstiger maksimal spærlængde..");
+    public Material calculateRafters(double width) {
+        // Tilgængelige længder på spær (sorteret fra kortest til længst)
+        int[] availableLengths = {300, 360, 420, 480, 540, 600, 660, 720};
+        int rafterSpacing = 55; // Afstand mellem spær (standardafstand)
+        int rafterThickness = 4; // Spærenes tykkelse
+
+        // Beregn antal spær baseret på bredden
+        int totalRafters = (int) Math.ceil((width - rafterThickness) / rafterSpacing) + 1;
+
+        // Find den mindste længde, der kan dække bredden (width)
+        int selectedLength = 0;
+        for (int lengthOption : availableLengths) {
+            if (lengthOption >= width) {
+                selectedLength = lengthOption;
+                break; // Stop når den første passende længde findes
+            }
         }
 
-        // Antallet af spær i længderetningen (baseret på afstand mellem dem)
-        int raftersAlongWidth = (int) Math.ceil((width - rafterThickness) / spaceBetweenRafts) + 1;
+        if (selectedLength == 0) {
+            throw new IllegalStateException("Kunne ikke finde en passende længde for spær.");
+        }
 
-        // Hvis bredden overstiger den maksimale spærlængde, skal vi have flere spær
-        int rafterSections = (int) Math.ceil(width / maxRafterLength);
+        // Generer søgeterm for prisen
+        String searchTerm = String.format("47X200 MM SPÆRTRÆ C24 HØVLET TIL 45X195MM - 70%% PEFC - %dcm", selectedLength);
+        System.out.println("Søgeterm: " + searchTerm);
 
-        // Samlet antal spær, justeret for sektioner, hvis nødvendigt
-        int totalRafters = raftersAlongWidth * rafterSections;
-
-        // Find prisen på spærene
+        // Find prisen for spærene
         List<Product> products = priceFinder.findPrices(searchTerm);
+        BigDecimal pricePerRafter;
+
         if (products.isEmpty()) {
             System.out.println("Ingen priser fundet for: " + searchTerm);
-            return new Material("Spærtræ", totalRafters, BigDecimal.ZERO);
+            pricePerRafter = BigDecimal.ZERO;
+        } else {
+            String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty()
+                    ? products.get(0).getPrice()
+                    : products.get(0).getExternalPrice().toString();
+
+            try {
+                pricePerRafter = new BigDecimal(priceAsString);
+            } catch (NumberFormatException e) {
+                System.err.println("Ugyldigt format for pris: " + priceAsString);
+                pricePerRafter = BigDecimal.ZERO;
+            }
         }
 
-        String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty()
-                ? products.get(0).getPrice()
-                : products.get(0).getExternalPrice().toString();
-        BigDecimal pricePerRafter;
-        try {
-            pricePerRafter = new BigDecimal(priceAsString);
-        } catch (NumberFormatException e) {
-            System.err.println("Ugyldigt format for pris: " + priceAsString);
-            return new Material("Spærtræ", totalRafters, BigDecimal.ZERO);
-        }
+        // Udregn totalpris for spærene
+        BigDecimal totalPriceForRafters = pricePerRafter.multiply(BigDecimal.valueOf(totalRafters));
 
-        return new Material("Spærtræ", totalRafters, pricePerRafter);
+        // Tilføj hvert spær som et individuelt materiale til partsList
+        partsList.addMaterial(new Material(
+                String.format("Spærtræ - %d cm", selectedLength), // Navn med længden
+                totalRafters,                                    // Antal
+                pricePerRafter                                   // Enhedspris
+        ));
+
+        // Returnér samlet objekt for alle spær
+        return new Material(
+                "Spærtræ (samlet)",          // Navn for samlet oversigt
+                totalRafters,                // Samlet antal spær
+                BigDecimal.ZERO,             // Enhedspris er ikke relevant
+                totalPriceForRafters         // Totalpris for alle spær
+        );
     }
+
+
+
 
     public Material calculatePoles(double length, double height) {
         // Mulige længder der kan bruges (sorteret fra længst til kortest for at optimere først)
@@ -152,9 +184,6 @@ public class PartsListGenerator {
             }
         }
 
-        // Log samlet output
-        System.out.println("Samlet antal stolper: " + totalPoles);
-        System.out.println("Samlet pris for alle stolper: " + totalPrice);
 
         // Returnér et samlet objekt
         return new Material(
@@ -266,5 +295,4 @@ public class PartsListGenerator {
     public PartsList getPartsList() {
         return partsList;
     }
-
 }

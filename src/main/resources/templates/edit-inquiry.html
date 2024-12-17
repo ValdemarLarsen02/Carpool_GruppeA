@@ -81,9 +81,39 @@
 </nav>
 
 <!-- Hovedindhold -->
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+<div class="container-fluid my-5">
+    <div class="row gx-5 gy-4">
+        <!-- Venstre Kolonne -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <h3 class="text-secondary">Stykliste</h3>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Antal</th>
+                    <th>Enhedspris (DKK)</th>
+                    <th>Totalpris (DKK)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="material : ${partsList}">
+                    <td th:text="${material.name}">Navn</td>
+                    <td th:text="${material.quantity}">Antal</td>
+                    <td th:text="${#numbers.formatDecimal(material.unitPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(material.totalPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Samlet Pris:</strong></td>
+                    <td th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK</td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Midterste Kolonne -->
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h1 class="text-center">Rediger Forespørgsel</h1>
@@ -105,8 +135,7 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <input type="text" class="form-control" id="status" name="status"
-                                   th:value="${inquiry.status}"
-                                   placeholder="Indtast status">
+                                   th:value="${inquiry.status}" placeholder="Indtast status">
                         </div>
 
                         <!-- Dimensioner -->
@@ -140,11 +169,17 @@
                         <!-- Knapper -->
                         <div class="d-flex justify-content-between mt-4">
                             <button type="submit" class="btn btn-success">Gem Ændringer</button>
-                            <a href="/" class="btn btn-secondary">Annuller</a>
+                            <a href="/inquiries" class="btn btn-secondary">Annuller</a>
                         </div>
                     </form>
                 </div>
             </div>
+        </div>
+
+        <!-- Højre Kolonne -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <h3 class="text-secondary text-center">Tegning</h3>
+            <div id="svgContainer" th:utext="${svgOutput}"></div>
         </div>
     </div>
 </div>
