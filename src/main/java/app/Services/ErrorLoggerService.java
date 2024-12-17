@@ -1,4 +1,4 @@
-package app.Services;
+package app.services;
 
 import app.controllers.DatabaseController;
 

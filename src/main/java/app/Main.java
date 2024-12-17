@@ -36,7 +36,11 @@ public class Main {
 
 
         // Routing
-        app.get("/", ctx -> ctx.render("index.html"));
+        //app.get("/", ctx -> ctx.render("index.html"));
+
+        app.get("/", ctx -> ctx.render("carport_oversigt.html"));
+
+
         app.get("/test", ctx -> ctx.render("payment.html"));
 
         InquiryController inquiryController = new InquiryController(inquiryService, salesmanService, requestParser, emailService, customerService, dbController);
