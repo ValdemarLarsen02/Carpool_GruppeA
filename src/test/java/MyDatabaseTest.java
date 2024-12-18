@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.*;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -22,4 +23,15 @@ public class MyDatabaseTest extends DatabaseIntegrationTest {
             Assertions.assertEquals("Test User", rs.getString("name"));
         }
     }
+    @AfterAll
+    void cleanUp() {
+        try (Connection conn = getDataSource().getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM kunde");
+            System.out.println("Table 'kunde' has been cleared.");
+        } catch (SQLException e) {
+            System.err.println("Error during cleanup: " + e.getMessage());
+        }
+    }
+
 }
