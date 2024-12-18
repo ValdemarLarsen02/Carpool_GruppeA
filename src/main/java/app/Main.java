@@ -4,11 +4,8 @@ import app.services.*;
 import app.config.*;
 import app.controllers.*;
 import app.utils.RequestParser;
-import app.utils.Scrapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
-
-import java.util.Date;
 
 
 public class Main {
@@ -34,14 +31,17 @@ public class Main {
         SVGController svgController = new SVGController();
 
 
+        //Service
+        PredefinedCarportsService predefinedCarportsService = new PredefinedCarportsService(dbController);
 
         // Routing
         app.get("/", ctx -> ctx.render("index.html"));
 
-        app.get("/oversigt", ctx -> ctx.render("carport_oversigt.html"));
+        //app.get("/oversigt", ctx -> ctx.render("carport_oversigt.html"));
 
 
         app.get("/test", ctx -> ctx.render("payment.html"));
+        PredefinedCarports predefinedCarports = new PredefinedCarports(dbController, predefinedCarportsService);
 
         InquiryController inquiryController = new InquiryController(inquiryService, salesmanService, requestParser, emailService, customerService, dbController);
         EmailController emailController = new EmailController(emailService, dbController);
@@ -51,6 +51,9 @@ public class Main {
         emailController.registerRoutes(app);
         adminController.registerRoutes(app);
         svgController.registerRoutes(app); // Tegning af svg'er
+        predefinedCarports.registerRoutes(app);
+
+
 
 
     }

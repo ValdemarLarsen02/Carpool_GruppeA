@@ -4,63 +4,70 @@ import java.util.List;
 
 public class Carport {
     private int carportId;
-    private String dimensions;
-    private String roofType;
-    private double price;
-    private List<String> addons;
+    private String carportName;
+    private int length;
+    private int width;
+
+    private boolean withShed;
+    private int shedLength;
+    private int shedWidth;
+
+    //Priser
+
+    private double totalPrice;
+
+    private String image;
 
     // Constructor
-    public Carport(int carportId, String dimensions, String roofType, double price, List<String> addons) {
+
+    public Carport(int carportId, String carportName, int length, int width, boolean withShed, int shedLength, int shedWidth, double totalPrice, String image) {
         this.carportId = carportId;
-        this.dimensions = dimensions;
-        this.roofType = roofType;
-        this.price = price;
-        this.addons = addons;
+        this.carportName = carportName;
+        this.length = length;
+        this.width = width;
+        this.withShed = withShed;
+        this.shedLength = shedLength;
+        this.shedWidth = shedWidth;
+        this.totalPrice = totalPrice;
+        this.image = image;
     }
 
-    // Getters and Setters
+    //Getters & setters:
     public int getCarportId() {
         return carportId;
     }
 
-    public void setCarportId(int carportId) {
-        this.carportId = carportId;
+    public String getCarportName() {
+        return carportName;
     }
 
-    public String getDimensions() {
-        return dimensions;
+    public int getLength() {
+        return length;
+    }
+    public int getWidth() {
+        return width;
     }
 
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
+    public boolean isWithShed() {
+        return withShed;
+    }
+    public int getShedLength() {
+        return shedLength;
+    }
+    public int getShedWidth() {
+        return shedWidth;
+    }
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public String getRoofType() {
-        return roofType;
+    public String getImage() {
+        return image;
     }
 
-    public void setRoofType(String roofType) {
-        this.roofType = roofType;
-    }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public List<String> getAddons() {
-        return addons;
-    }
-
-    public void setAddons(List<String> addons) {
-        this.addons = addons;
-    }
-
-    // Method to get carport details
-    public String getDetails() {
-        return "Carport ID: " + carportId + ", Dimensions: " + dimensions + ", Roof Type: " + roofType + ", Price: " + price;
+    @Override
+    public String toString() {
+        return "Carport [carportId=" + carportId + ", carportName=" + carportName + ", length=" + length + ", width=" + width + ", withShed=" + withShed + ", shedLength=" + shedLength + ", shedWidth=" + shedWidth + ", totalPrice=" + totalPrice + "Billede" + image + "]";
     }
 }

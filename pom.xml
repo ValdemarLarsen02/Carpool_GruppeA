@@ -24,7 +24,6 @@
         <junit.version>5.10.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <postgresql.version>42.7.2</postgresql.version>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

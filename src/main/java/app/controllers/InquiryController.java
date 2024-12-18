@@ -37,7 +37,6 @@ public class InquiryController {
         this.emailService = emailService;
         this.dbController = dbController;
         this.customerService = customerService;
-
     }
 
     //Registrerer javalin ruter
@@ -139,7 +138,6 @@ public class InquiryController {
 
             // Gem kunden og forespørgslen via services
             inquiryService.saveInquiryWithCustomer(inquiry, customer);
-            System.out.println(inquiry);
             // Render bekræftelsessiden
             ctx.render("inquiry-confirmation.html", Map.of("customerName", customer.getName(), "carportLength", inquiry.getCarportLength(), "carportWidth", inquiry.getCarportWidth(), "shedLength", inquiry.getShedLength() != null ? inquiry.getShedLength() : "Ingen", "shedWidth", inquiry.getShedWidth() != null ? inquiry.getShedWidth() : "Ingen", "comments", inquiry.getComments() != null ? inquiry.getComments() : "Ingen", "status", inquiry.getStatus()));
         } catch (IllegalArgumentException e) {
