@@ -1,123 +1,28 @@
 @startuml
-class Customer {
-    - name: String
-    - email: String
-    + submitInquiry(inquiry: Inquiry): void
-    + viewCarports(filters: Map<String, String>): List<Carport>
-}
+|Slutkunde|
+start
+:Kunde bestiller carport;
 
-class Inquiry {
-    - id: int
-    - dimensions: String
-    - materials: String
-    - status: String
-    - createdDate: Date
-    - emailSent: boolean
-    - customer: Customer
-    - assignedSeller: Seller
-    + assignSeller(seller: Seller): void
-    + updateStatus(status: String): void
-}
+|Sælger|
+:Sælger modtager ordre;
 
-class Order {
-    - orderId: int
-    - inquiry: Inquiry
-    - price: double
-    - details: String
-    + generateOrderDetails(): String
-}
+|Beregningssystem A|
+:Beregningssystem A laver tilbud;
 
-class Payment {
-    - paymentId: int
-    - order: Order
-    - paymentLink: String
-    - paymentStatus: String
-    + generatePaymentLink(): String
-    + processPayment(): boolean
-}
+|Slutkunde|
+:Accept af tilbud;
 
-class Seller {
-    - name: String
-    - email: String
-    + viewInquiries(): List<Inquiry>
-    + assignInquiry(inquiry: Inquiry): void
-    + editInquiry(inquiry: Inquiry): void
-    + generate3DModel(inquiry: Inquiry): String
-    + sendOfferEmail(customer: Customer, offer: String): boolean
-}
+|Sælger|
+:Sælger accepterer tilbud;
 
-class Admin {
-    + editAnyInquiry(inquiry: Inquiry): void
-    + manageProducts(): void
-}
+|Beregningssystem B|
+:Beregningssystem B laver styk/plukliste;
 
-class Product {
-    - productId: int
-    - name: String
-    - price: double
-    - category: String
-    - description: String
-    + validateProduct(): boolean
-}
+|Lager|
+:Lager modtager liste;
 
-class ProductCatalog {
-    - products: List<Product>
-    + updateProduct(product: Product): void
-    + addProduct(product: Product): void
-}
+|Slutkunde|
+:Slutkunde informeres;
 
-class Carport {
-    - carportId: int
-    - dimensions: String
-    - roofType: String
-    - price: double
-    - addons: List<String>
-    + getDetails(): String
-}
-
-class CarportCatalog {
-    - carports: List<Carport>
-    + filterCarports(filters: Map<String, String>): List<Carport>
-}
-
-class Scraper {
-    + scrapeFOGWebsite(): Map<String, String>
-    + updatePricesAndLengths(data: Map<String, String>): void
-}
-
-class PriceCalculator {
-    + calculatePrice(inquiry: Inquiry): double
-    + calculateCosts(inquiry: Inquiry): double
-    + calculateMargin(price: double, costs: double): double
-}
-
-class ThreeDModelGenerator {
-    + generate3DModel(inquiry: Inquiry): String
-}
-
-class EmailService {
-    + sendEmail(recipient: String, subject: String, body: String): boolean
-}
-
-class System {
-    + sendConfirmationEmail(customer: Customer, inquiry: Inquiry): void
-    + showConfirmationMessage(): void
-}
-
-Customer --> Inquiry : "creates"
-Inquiry --> Customer : "belongs to"
-Inquiry --> Order : "generates"
-Order --> Payment : "is paid by"
-Seller --> Inquiry : "handles"
-Seller --> ThreeDModelGenerator : "uses"
-Seller --> EmailService : "sends emails via"
-Admin --> ProductCatalog : "manages"
-ProductCatalog --> Product : "contains"
-CarportCatalog --> Carport : "contains"
-Customer --> CarportCatalog : "views and filters"
-Scraper --> ProductCatalog : "updates"
-Scraper --> CarportCatalog : "updates"
-PriceCalculator --> Inquiry : "processes"
-System --> Customer : "sends email"
-System --> Inquiry : "updates status"
+stop
 @enduml

@@ -93,17 +93,23 @@ function drawVerticalLines(xStart, yStart, carportLength, carportWidth, scaleFac
 // Funktion til at tegne carporten og skuret
 function drawCarport() {
     svgElement.innerHTML = ""; // Fjern den tidligere tegning
-    const carportWidth = parseInt(document.getElementById("carportWidth").value, 10); // Bredde i cm
-    const carportLength = parseInt(document.getElementById("carportLength").value, 10); // Længde i cm
-    const scaleFactor = 0.5; // Eksempel: Skaler cm til pixels for visualisering
-    const xStart = 50; // Start X-koordinat for carporten
-    const yStart = 50; // Start Y-koordinat for carporten
-    drawGrid();
+
+    // Hent værdier for carport dimensioner
+    const carportWidth = parseInt(document.getElementById("carportWidth").value, 10);
+    const carportLength = parseInt(document.getElementById("carportLength").value, 10);
+    const shedWidth = parseInt(document.getElementById("shedWidth").value, 10);
+    const shedLength = parseInt(document.getElementById("shedLength").value, 10);
+
+    const scaleFactor = 0.5;
+    const xStart = 50;
+    const yStart = 50;
+
+    drawGrid(); // Tegn baggrundsgitteret
 
     // Tegn carporten
     const carportRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    carportRect.setAttribute("x", 50);
-    carportRect.setAttribute("y", 50);
+    carportRect.setAttribute("x", xStart);
+    carportRect.setAttribute("y", yStart);
     carportRect.setAttribute("width", carportWidth);
     carportRect.setAttribute("height", carportLength);
     carportRect.setAttribute("fill", "none");
@@ -112,49 +118,33 @@ function drawCarport() {
     svgElement.appendChild(carportRect);
 
     // Tilføj målelinjer for carporten
-    addMeasurementLine(50, 50, 50 + carportWidth, 50, `${carportWidth} cm`); // Øverste bredde
-    addMeasurementLine(50, 50, 50, 50 + carportLength, `${carportLength} cm`); // Venstre højde
+    addMeasurementLine(xStart, yStart, xStart + carportWidth, yStart, `${carportWidth} cm`);
+    addMeasurementLine(xStart, yStart, xStart, yStart + carportLength, `${carportLength} cm`);
 
     drawVerticalLines(xStart, yStart, carportLength, carportWidth, scaleFactor);
 
-    // Tilføj stolper til carporten (4 hjørner)
-    addPoles(50, 50); // Øverste venstre hjørne af carporten
-    addPoles(50 + carportWidth, 50); // Øverste højre hjørne af carporten
-    addPoles(50, 50 + carportLength); // Nederste venstre hjørne af carporten
-    addPoles(50 + carportWidth, 50 + carportLength); // Nederste højre hjørne af carporten
+    // Tegn skuret KUN hvis bredde og længde er valgt
+    if (!isNaN(shedWidth) && !isNaN(shedLength)) {
+        const shedRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        shedRect.setAttribute("x", shedX);
+        shedRect.setAttribute("y", shedY);
+        shedRect.setAttribute("width", shedWidth);
+        shedRect.setAttribute("height", shedLength);
+        shedRect.setAttribute("fill", "none");
+        shedRect.setAttribute("stroke", "black");
+        shedRect.setAttribute("stroke-width", "2");
+        svgElement.appendChild(shedRect);
 
-    // Tilføj stolper mellem hjørnerne (carporten)
-    addPolesBetween(50, 50, 50 + carportWidth, 50); // Øverste kant (venstre-højre)
-    addPolesBetween(50, 50, 50, 50 + carportLength); // Venstre kant (top-bund)
-    addPolesBetween(50 + carportWidth, 50, 50 + carportWidth, 50 + carportLength); // Højre kant (top-bund)
-    addPolesBetween(50, 50 + carportLength, 50 + carportWidth, 50 + carportLength); // Nederste kant (venstre-højre)
+        // Målelinjer for skuret
+        addMeasurementLine(shedX, shedY, shedX + shedWidth, shedY, `${shedWidth} cm`);
+        addMeasurementLine(shedX, shedY, shedX, shedY + shedLength, `${shedLength} cm`);
 
-    // Tegn skuret
-    const shedRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    shedRect.setAttribute("x", shedX);
-    shedRect.setAttribute("y", shedY);
-    shedRect.setAttribute("width", shedWidth);
-    shedRect.setAttribute("height", shedLength);
-    shedRect.setAttribute("fill", "none");
-    shedRect.setAttribute("stroke", "black");
-    shedRect.setAttribute("stroke-width", "2");
-    svgElement.appendChild(shedRect);
-
-    // Tilføj målelinjer for skuret
-    addMeasurementLine(shedX, shedY, shedX + shedWidth, shedY, `${shedWidth} cm`); // Øverste bredde
-    addMeasurementLine(shedX, shedY, shedX, shedY + shedLength, `${shedLength} cm`); // Venstre højde
-
-    // Tilføj stolper til skuret (4 hjørner)
-    addPoles(shedX, shedY); // Øverste venstre hjørne
-    addPoles(shedX + shedWidth, shedY); // Øverste højre hjørne
-    addPoles(shedX, shedY + shedLength); // Nederste venstre hjørne
-    addPoles(shedX + shedWidth, shedY + shedLength); // Nederste højre hjørne
-
-    // Tilføj stolper mellem hjørnerne (skuret)
-    addPolesBetween(shedX, shedY, shedX + shedWidth, shedY); // Øverste kant (venstre-højre)
-    addPolesBetween(shedX, shedY, shedX, shedY + shedLength); // Venstre kant (top-bund)
-    addPolesBetween(shedX + shedWidth, shedY, shedX + shedWidth, shedY + shedLength); // Højre kant (top-bund)
-    addPolesBetween(shedX, shedY + shedLength, shedX + shedWidth, shedY + shedLength); // Nederste kant (venstre-højre)
+        // Stolper til skuret
+        addPoles(shedX, shedY); // Øverste venstre
+        addPoles(shedX + shedWidth, shedY); // Øverste højre
+        addPoles(shedX, shedY + shedLength); // Nederste venstre
+        addPoles(shedX + shedWidth, shedY + shedLength); // Nederste højre
+    }
 }
 
 // Funktion til at tilføje stolper mellem to punkter
