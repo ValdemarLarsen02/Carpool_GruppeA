@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carport Oversigt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Sikrer, at alle kort har samme størrelse */
+        .carport-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Ensartet billedhøjde */
+        .carport-card img {
+            width: 100%;
+            height: 200px; /* Fast højde for billeder */
+            object-fit: cover; /* Sørger for, at billeder beskæres uden forvrængning */
+        }
+
+        /* Ensartet højde på card-body */
+        .carport-card .card-body {
+            flex: 1; /* Fyld tilgængelig plads */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Gør knappen til fast placering i bunden af kortet */
+        .carport-card .btn {
+            align-self: flex-end;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Johannes Fog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/">Hjem</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Produkter</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about-us}">Om Os</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Kontakt</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/salesman-login}">Sælger Portal</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Carport Oversigt</h1>
+
+    <!-- Carporte visning -->
+    <div class="row" id="carportList">
+        <div class="col-md-4 mb-4" th:each="carport : ${carports}">
+            <div class="card carport-card"
+                 th:attr="data-price=${carport.totalPrice},data-width=${carport.width},data-shed=${carport.withShed}">
+                <img th:src="${carport.image}" class="card-img-top" alt="Billede af carport">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${carport.carportName}">Carport Navn</h5>
+                    <p class="card-text"
+                       th:text="'Dimensioner: ' + ${carport.width} + 'm x ' + ${carport.length} + 'm'">Dimensioner</p>
+                    <p class="card-text" th:text="'Med skur: ' + (${carport.withShed} ? 'Ja' : 'Nej')">Med skur</p>
+                    <p class="card-text" th:text="'Pris: ' + ${carport.totalPrice} + ' DKK'">Pris</p>
+                    <a th:href="@{/carport/details/{id}(id=${carport.carportId})}" class="btn btn-primary">Se
+                        detaljer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

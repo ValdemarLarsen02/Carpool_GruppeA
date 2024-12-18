@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rediger Forespørgsel</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #f8f9fa !important;
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #adb5bd !important;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #f8f9fa;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Johannes Fog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/}">Hjem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Produkter</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about-us">Om Os</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Kontakt</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/sales-portal}">Sælger Portal</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hovedindhold -->
+<div class="container-fluid my-5">
+    <div class="row gx-5 gy-4">
+        <!-- Venstre Kolonne -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <h3 class="text-secondary">Stykliste</h3>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Antal</th>
+                    <th>Enhedspris (DKK)</th>
+                    <th>Totalpris (DKK)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="material : ${partsList}">
+                    <td th:text="${material.name}">Navn</td>
+                    <td th:text="${material.quantity}">Antal</td>
+                    <td th:text="${#numbers.formatDecimal(material.unitPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td th:text="${#numbers.formatDecimal(material.totalPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Samlet Pris:</strong></td>
+                    <td id="totalMaterialCost"
+                        th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+            <!-- Beregn Pris Sektion -->
+            <div class="mt-4 p-3 border rounded bg-light">
+                <h4 class="text-secondary">Beregn Pris</h4>
+                <div class="mb-3">
+                    <label for="markupPercentage" class="form-label">Dækningsgrad (%)</label>
+                    <input type="number" class="form-control" id="markupPercentage"
+                           placeholder="Indtast dækningsgrad (f.eks. 20)" min="0" step="1">
+                </div>
+
+                <button class="btn btn-primary mb-3" onclick="calculateSellingPrice()">Beregn Salgspris</button>
+
+                <!-- Resultattabel -->
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Omkostninger (Materialer)</th>
+                        <th>Dækningsgrad (%)</th>
+                        <th>Overskud</th>
+                        <th>Salgspris</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td id="costPrice">0.00 DKK</td>
+                        <td id="markupResult">0%</td>
+                        <td id="profitAmount">0.00 DKK</td>
+                        <td id="sellingPrice">0.00 DKK</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success mb-3" onclick="sendPriceToCustomerList()">Vedhæft pris</button>
+            </div>
+        </div>
+
+        <!-- Midterste Kolonne -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="text-center">Send besked til kunde</h1>
+                </div>
+                <div class="card-body">
+                    <form id="brugerRequest" th:action="@{/edit-inquiry}" method="post" th:object="${inquiry}">
+                        <input type="hidden" name="id" th:value="${inquiry.id}">
+
+                        <!-- Kundeoplysninger -->
+                        <h3 class="text-secondary">Kundeoplysninger</h3>
+                        <div class="mb-3">
+                            <label for="customerId" class="form-label">Kunde ID</label>
+                            <input type="number" class="form-control" id="customerId" name="customerId"
+                                   th:value="${inquiry.customerId}" placeholder="Indtast kunde ID">
+                        </div>
+
+                        <!-- Forespørgselsdetaljer -->
+                        <h3 class="text-secondary mt-4">Forespørgselsdetaljer</h3>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <input type="text" class="form-control" id="status" name="status"
+                                   th:value="${inquiry.status}" placeholder="Indtast status">
+                        </div>
+
+                        <!-- Dimensioner -->
+                        <h3 class="text-secondary mt-4">Dimensioner</h3>
+                        <div class="mb-3">
+                            <label for="carportLength" class="form-label">Længde på carport (cm)</label>
+                            <input type="number" class="form-control" id="carportLength" name="carportLength"
+                                   th:value="${inquiry.carportLength}" placeholder="Indtast længden på carport">
+                        </div>
+                        <div class="mb-3">
+                            <label for="carportWidth" class="form-label">Bredde på carport (cm)</label>
+                            <input type="number" class="form-control" id="carportWidth" name="carportWidth"
+                                   th:value="${inquiry.carportWidth}" placeholder="Indtast bredden på carport">
+                        </div>
+                        <div class="mb-3">
+                            <label for="shedLength" class="form-label">Længde på redskabsskur (cm)</label>
+                            <input type="number" class="form-control" id="shedLength" name="shedLength"
+                                   th:value="${inquiry.shedLength}" placeholder="Indtast længden på skuret">
+                        </div>
+                        <div class="mb-3">
+                            <label for="shedWidth" class="form-label">Bredde på redskabsskur (cm)</label>
+                            <input type="number" class="form-control" id="shedWidth" name="shedWidth"
+                                   th:value="${inquiry.shedWidth}" placeholder="Indtast bredden på skuret">
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="comments" class="form-label">Kommentarer</label>
+                            <textarea class="form-control" id="comments" name="comments" rows="4"
+                                      placeholder="Skriv kommentarer her..." th:text="${inquiry.comments}"></textarea>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <input type="hidden" id="svgOutputHidden" name="svgOutput" th:value="${svgOutput}">
+                        </div>
+
+                        <div id="totalCostCustomerContainer" class="mb-3 d-none">
+                            <label for="calculatedSellingPrice" class="form-label">Salgspris</label>
+                            <input type="number" class="form-control" id="calculatedSellingPrice"
+                                   name="calculatedSellingPrice" step="any">
+                        </div>
+
+
+                        <!-- Knapper -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success">Gem Ændringer</button>
+                            <a href="/inquiries" class="btn btn-secondary">Annuller</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Højre Kolonne -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <h3 class="text-secondary text-center">Tegning</h3>
+            <div id="svgContainer" th:utext="${svgOutput}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center py-4 mt-auto">
+    <div class="container">
+        <p>&copy; 2024 Min Webside. Alle rettigheder forbeholdes.</p>
+        <p>
+            <a href="#">Privatlivspolitik</a> |
+            <a href="#">Cookies</a>
+        </p>
+    </div>
+</footer>
+
+
+<script>
+    function calculateSellingPrice() {
+        // Hent samlet pris fra tabellen
+        const totalMaterialCostText = document.getElementById("totalMaterialCost").innerText;
+
+        // Konverter til numerisk værdi (fjern 'DKK' og komma)
+        const totalMaterialCost = parseFloat(totalMaterialCostText.replace(' DKK', '').replace(',', ''));
+
+        // Hent dækningsgrad
+        const markupPercentage = parseFloat(document.getElementById("markupPercentage").value);
+
+        // Valider input
+        if (isNaN(totalMaterialCost) || isNaN(markupPercentage) || markupPercentage < 0) {
+            alert("Indtast en gyldig dækningsgrad og kontrolér den samlede pris.");
+            return;
+        }
+
+        // Beregn overskud og salgspris
+        const profitAmount = totalMaterialCost * (markupPercentage / 100);
+        const sellingPrice = totalMaterialCost + profitAmount;
+
+        // Opdater resultattabel
+        document.getElementById("costPrice").innerText = totalMaterialCost.toFixed(2) + " DKK";
+        document.getElementById("markupResult").innerText = markupPercentage.toFixed(1) + "%";
+        document.getElementById("profitAmount").innerText = profitAmount.toFixed(2) + " DKK";
+        document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2) + " DKK";
+        document.getElementById("sellingPrice").value = sellingPrice.toFixed(2); // sætter også som value, så værdi er nemmere at få fat i.
+    }
+
+    function sendPriceToCustomerList() {
+        //Henter slagsprisen der er udregnet:
+        let salgsPris = document.getElementById("sellingPrice").value;
+
+        if (!salgsPris || salgsPris === '' || salgsPris === null) {
+            alert("Du skal foretage en udregning før du kan vedhæfte prisen...");
+            return; // Stopper resten af koden for at køre..
+        }
+
+
+        const calculatedSellingPriceContainer = document.getElementById("totalCostCustomerContainer");
+        let calculatedSellingPriceInput = document.getElementById("calculatedSellingPrice");
+
+        //Gør vores container synlig:
+        calculatedSellingPriceContainer.classList.remove("d-none");
+
+
+        calculatedSellingPriceInput.value = salgsPris;
+    }
+</script>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
