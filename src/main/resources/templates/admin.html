@@ -43,7 +43,9 @@
             <td th:text="${product.price}"></td>
             <td th:text="${product.category}"></td>
             <td>
-                <button class="btn btn-warning btn-sm" th:attr="data-id=${product.id}" onclick="editProduct(this)">Rediger</button>
+                <button class="btn btn-warning btn-sm" th:attr="data-id=${product.id}" onclick="editProduct(this)">
+                    Rediger
+                </button>
                 <form th:action="@{/admin/product/delete}" method="post" style="display:inline;">
                     <input type="hidden" name="id" th:value="${product.id}">
                     <button type="submit" class="btn btn-danger btn-sm">Slet</button>
@@ -119,7 +121,8 @@
 </div>
 
 <!-- Add to Database Modal -->
-<div class="modal fade" id="addToDatabaseModal" tabindex="-1" aria-labelledby="addToDatabaseModalLabel" aria-hidden="true">
+<div class="modal fade" id="addToDatabaseModal" tabindex="-1" aria-labelledby="addToDatabaseModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -207,7 +210,6 @@
         <button class="btn btn-primary btn-sm" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}' onclick="handleAddToDatabase(this)">Tilføj</button>
     </td>
 `;
-
 
 
                     resultsBody.appendChild(row);

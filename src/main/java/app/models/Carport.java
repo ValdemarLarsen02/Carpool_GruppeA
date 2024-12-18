@@ -44,6 +44,7 @@ public class Carport {
     public int getLength() {
         return length;
     }
+
     public int getWidth() {
         return width;
     }
@@ -51,12 +52,15 @@ public class Carport {
     public boolean isWithShed() {
         return withShed;
     }
+
     public int getShedLength() {
         return shedLength;
     }
+
     public int getShedWidth() {
         return shedWidth;
     }
+
     public double getTotalPrice() {
         return totalPrice;
     }

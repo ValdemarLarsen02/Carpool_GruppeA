@@ -106,7 +106,9 @@
                 <tfoot>
                 <tr>
                     <td colspan="3" class="text-end"><strong>Samlet Pris:</strong></td>
-                    <td id="totalMaterialCost" th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK</td>
+                    <td id="totalMaterialCost"
+                        th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK
+                    </td>
                 </tr>
                 </tfoot>
             </table>
@@ -115,7 +117,8 @@
                 <h4 class="text-secondary">Beregn Pris</h4>
                 <div class="mb-3">
                     <label for="markupPercentage" class="form-label">Dækningsgrad (%)</label>
-                    <input type="number" class="form-control" id="markupPercentage" placeholder="Indtast dækningsgrad (f.eks. 20)" min="0" step="1">
+                    <input type="number" class="form-control" id="markupPercentage"
+                           placeholder="Indtast dækningsgrad (f.eks. 20)" min="0" step="1">
                 </div>
 
                 <button class="btn btn-primary mb-3" onclick="calculateSellingPrice()">Beregn Salgspris</button>
@@ -206,7 +209,8 @@
 
                         <div id="totalCostCustomerContainer" class="mb-3 d-none">
                             <label for="calculatedSellingPrice" class="form-label">Salgspris</label>
-                            <input type="number" class="form-control" id="calculatedSellingPrice" name="calculatedSellingPrice" step="any">
+                            <input type="number" class="form-control" id="calculatedSellingPrice"
+                                   name="calculatedSellingPrice" step="any">
                         </div>
 
 
@@ -289,8 +293,6 @@
         calculatedSellingPriceInput.value = salgsPris;
     }
 </script>
-
-
 
 
 <!-- Bootstrap JS -->

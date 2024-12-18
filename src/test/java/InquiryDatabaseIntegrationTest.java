@@ -1,31 +1,32 @@
 import org.junit.jupiter.api.*;
+
 import java.sql.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InquiryDatabaseDirectTest extends DatabaseIntegrationTest {
 
     @BeforeEach
     void insertTestData() throws SQLException {
-        try (Connection connection = getDataSource().getConnection();
-             Statement stmt = connection.createStatement()) {
+        try (Connection connection = getDataSource().getConnection(); Statement stmt = connection.createStatement()) {
 
             // Indsætter alt vores data til at teste med
             stmt.execute("""
-                INSERT INTO customers (id, name, email, phone, address, city, zipcode)
-                VALUES (1, 'Test Customer', 'test@example.com', '12345678', 'Testvej 1', 'TestCity', '1234');
-            """);
+                        INSERT INTO customers (id, name, email, phone, address, city, zipcode)
+                        VALUES (1, 'Test Customer', 'test@example.com', '12345678', 'Testvej 1', 'TestCity', '1234');
+                    """);
 
 
             stmt.execute("""
-                INSERT INTO salesmen (id, name, email)
-                VALUES (1, 'Test Salesman', 'salesman@example.com');
-            """);
+                        INSERT INTO salesmen (id, name, email)
+                        VALUES (1, 'Test Salesman', 'salesman@example.com');
+                    """);
 
 
             stmt.execute("""
-                INSERT INTO inquiries (id, email_sent, status, order_date, carport_length, carport_width, shed_length, shed_width, comments, customer_id, salesmen_id)
-                VALUES (1, true, 'PENDING', '2024-12-18', 600, 400, 200, 100, 'Test Comment', 1, 1);
-            """);
+                        INSERT INTO inquiries (id, email_sent, status, order_date, carport_length, carport_width, shed_length, shed_width, comments, customer_id, salesmen_id)
+                        VALUES (1, true, 'PENDING', '2024-12-18', 600, 400, 200, 100, 'Test Comment', 1, 1);
+                    """);
         }
     }
 
@@ -51,9 +52,7 @@ class InquiryDatabaseDirectTest extends DatabaseIntegrationTest {
                 WHERE inquiries.id = 1;
                 """;
 
-        try (Connection connection = getDataSource().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = getDataSource().getConnection(); PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
 
             // Validér resultatet
             assertTrue(resultSet.next(), "Result set should contain at least one row");
@@ -74,8 +73,7 @@ class InquiryDatabaseDirectTest extends DatabaseIntegrationTest {
     @AfterEach
     void cleanTestData() throws SQLException {
         // Sletter alt data efer vi har kørt vores test.
-        try (Connection connection = getDataSource().getConnection();
-             Statement stmt = connection.createStatement()) {
+        try (Connection connection = getDataSource().getConnection(); Statement stmt = connection.createStatement()) {
             stmt.execute("DELETE FROM inquiries;");
             stmt.execute("DELETE FROM customers;");
             stmt.execute("DELETE FROM salesmen;");

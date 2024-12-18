@@ -1,12 +1,12 @@
 package app.utils;
 
-import app.config.Customer;
-import app.config.Inquiry;
+import app.models.Customer;
+import app.models.Inquiry;
 import io.javalin.http.Context;
 
 public class RequestParser {
 
-    private Double parseNullableDouble(String param) {
+    public Double parseNullableDouble(String param) {
         return param != null && !param.isEmpty() ? Double.parseDouble(param) : null;
     }
 

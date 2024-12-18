@@ -1,6 +1,6 @@
 package app.services;
 
-import app.config.Salesman;
+import app.models.Salesman;
 import app.controllers.DatabaseController;
 
 import java.sql.Connection;
@@ -45,13 +45,12 @@ public class SalesmanService {
     public void createSalesmanInDatabase(String name, String email) {
         String query = "INSERT INTO salesmen (name, email) VALUES (?, ?)";
 
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-             preparedStatement.setString(1, name);
-             preparedStatement.setString(2, email);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, email);
 
-             preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             String errorMessage = "Der skete en fejl under oprettelse af en sælger, i createSalesmanInDatabase metoden";

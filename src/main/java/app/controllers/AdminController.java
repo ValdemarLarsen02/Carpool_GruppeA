@@ -1,6 +1,6 @@
 package app.controllers;
 
-import app.config.Admin;
+import app.models.Admin;
 import app.models.Product;
 import app.services.ProductService;
 import app.utils.Scrapper;

@@ -2,6 +2,7 @@ import app.utils.ConfigLoader;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
+
 import javax.sql.DataSource;
 
 public class DatabaseIntegrationTest {

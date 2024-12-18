@@ -1,5 +1,6 @@
 package app;
 
+import app.models.Admin;
 import app.services.*;
 import app.config.*;
 import app.controllers.*;
@@ -52,8 +53,6 @@ public class Main {
         adminController.registerRoutes(app);
         svgController.registerRoutes(app); // Tegning af svg'er
         predefinedCarports.registerRoutes(app);
-
-
 
 
     }

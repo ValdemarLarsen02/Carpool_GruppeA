@@ -1,6 +1,7 @@
 package app.services;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -28,7 +29,6 @@ public class CarportSVGTest {
 
         // Act
         String svgOutput = carport.generateSVG();
-
 
 
         // Assert
@@ -85,7 +85,6 @@ public class CarportSVGTest {
 
         // Act
         String svgOutput = carport.generateSVG();
-
 
 
         System.out.println(svgOutput);

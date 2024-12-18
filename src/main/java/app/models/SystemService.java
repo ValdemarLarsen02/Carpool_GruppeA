@@ -1,4 +1,4 @@
-package app.config;
+package app.models;
 
 public class SystemService {
     public void sendConfirmationEmail(Customer customer, Inquiry inquiry) {

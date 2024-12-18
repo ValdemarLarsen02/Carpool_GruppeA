@@ -79,11 +79,13 @@
             <form th:action="@{/create-salesman}" method="post">
                 <div class="mb-3">
                     <label for="name" class="form-label">Sælger Navn:</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Indtast sælgerens navn" required>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Indtast sælgerens navn"
+                           required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Sælger E-mail:</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Indtast sælgerens e-mail" required>
+                    <input type="email" class="form-control" id="email" name="email"
+                           placeholder="Indtast sælgerens e-mail" required>
                 </div>
                 <button type="submit" class="btn btn-dark-blue w-100">Opret Sælger</button>
             </form>

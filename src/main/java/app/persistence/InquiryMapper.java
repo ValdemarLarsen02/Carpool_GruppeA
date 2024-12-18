@@ -1,9 +1,6 @@
 package app.persistence;
 
-import app.config.Customer;
-import app.config.Inquiry;
-import app.config.Salesman;
-import io.javalin.http.Context;
+import app.models.Inquiry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

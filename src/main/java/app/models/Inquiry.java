@@ -1,4 +1,4 @@
-package app.config;
+package app.models;
 
 import java.util.Date;
 
@@ -157,21 +157,7 @@ public class Inquiry {
 
     @Override
     public String toString() {
-        return "Inquiry {" +
-                "id=" + id +
-                ", customerId=" + customerId +
-                ", salesmanAssigned=" + salesmanAssigned +
-                ", salesmanId=" + (salesmanId != null ? salesmanId : "N/A") +
-                ", emailSent=" + (emailSent != null ? emailSent : "N/A") +
-                ", status='" + (status != null ? status : "N/A") + '\'' +
-                ", orderDate=" + (orderDate != null ? orderDate : "N/A") +
-                ", carportLength=" + (carportLength != null ? carportLength : "N/A") +
-                ", carportWidth=" + (carportWidth != null ? carportWidth : "N/A") +
-                ", shedLength=" + (shedLength != null ? shedLength : "N/A") +
-                ", shedWidth=" + (shedWidth != null ? shedWidth : "N/A") +
-                ", comments='" + (comments != null ? comments : "N/A") + '\'' +
-                ", customer=" + (customer != null ? customer.toString() : "N/A") +
-                " }";
+        return "Inquiry {" + "id=" + id + ", customerId=" + customerId + ", salesmanAssigned=" + salesmanAssigned + ", salesmanId=" + (salesmanId != null ? salesmanId : "N/A") + ", emailSent=" + (emailSent != null ? emailSent : "N/A") + ", status='" + (status != null ? status : "N/A") + '\'' + ", orderDate=" + (orderDate != null ? orderDate : "N/A") + ", carportLength=" + (carportLength != null ? carportLength : "N/A") + ", carportWidth=" + (carportWidth != null ? carportWidth : "N/A") + ", shedLength=" + (shedLength != null ? shedLength : "N/A") + ", shedWidth=" + (shedWidth != null ? shedWidth : "N/A") + ", comments='" + (comments != null ? comments : "N/A") + '\'' + ", customer=" + (customer != null ? customer.toString() : "N/A") + " }";
     }
 
 

@@ -1,8 +1,7 @@
 package app.services;
 
-import app.config.Customer;
-import app.config.Inquiry;
-import app.config.Salesman;
+import app.models.Customer;
+import app.models.Inquiry;
 import app.controllers.DatabaseController;
 import app.persistence.InquiryMapper;
 import app.utils.DropdownOptions;
@@ -32,7 +31,7 @@ public class InquiryService {
         return Map.of("carportWidthOptions", DropdownOptions.generateOptions(240, 600, 30), "carportLengthOptions", DropdownOptions.generateOptions(240, 780, 30), "shedWidthOptions", DropdownOptions.generateOptions(210, 720, 30), "shedLengthOptions", DropdownOptions.generateOptions(210, 720, 30));
     }
 
-    //Henter inquiries fra databasen, og retunere dem i en liste
+    //Henter inquiries fra databasen, og returnere dem i en liste
     public List<Inquiry> getInquiriesFromDatabase() {
         List<Inquiry> inquiries = new ArrayList<>();
 
@@ -80,7 +79,7 @@ public class InquiryService {
         return inquiries;
     }
 
-    //Tjekker om en inquiry har en sælger tilknyttet, retunere en boolean værdi
+    //Tjekker om en inquiry har en sælger tilknyttet, returnere en boolean værdi
     public boolean hasSalesmanAssigned(int inquiryID) {
         String query = "SELECT salesmen_id FROM inquiries WHERE id = ?";
 
@@ -396,8 +395,7 @@ public class InquiryService {
 
     public boolean deleteInquiryById(int inquiryId) {
         String query = "DELETE FROM inquiries WHERE id = ?";
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, inquiryId);
 

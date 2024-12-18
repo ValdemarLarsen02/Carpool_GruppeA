@@ -10,15 +10,18 @@
             height: 100%;
             margin: 0;
         }
+
         .full-height {
             height: 100vh; /* Fuld viewport højde */
         }
+
         .canvas-container {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100%;
         }
+
         canvas {
             border: 1px solid #000;
             background-color: #f9f9f9;
@@ -116,10 +119,10 @@
 </div>
 <script>
     //Sender data til backend via js for at undgå at bruge et form.
-    document.getElementById("fetchTegning").addEventListener("click", function() {
+    document.getElementById("fetchTegning").addEventListener("click", function () {
         fetch("/generate-svg", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 carportWidth: document.getElementById("carportWidth").value,
                 carportLength: document.getElementById("carportLength").value,

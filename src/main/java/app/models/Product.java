@@ -118,16 +118,6 @@ public class Product {
     // ToString-metode til debugging
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                ", externalPrice=" + externalPrice +
-                ", meterPrice='" + meterPrice + '\'' +
-                ", url='" + url + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
+        return "Product{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + ", price=" + price + ", category='" + category + '\'' + ", externalPrice=" + externalPrice + ", meterPrice='" + meterPrice + '\'' + ", url='" + url + '\'' + ", imageUrl='" + imageUrl + '\'' + '}';
     }
 }

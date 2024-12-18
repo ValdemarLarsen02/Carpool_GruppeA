@@ -16,27 +16,11 @@ public class StripePayment {
             long amountInCents = Math.round(amountInDkk * 100);
 
             // Opret Checkout Session parametre
-            SessionCreateParams params = SessionCreateParams.builder()
-                    .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:7000/success") // URL ved succes
+            SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT).setSuccessUrl("http://localhost:7000/success") // URL ved succes
                     .setCancelUrl("http://localhost:7000/cancel")   // URL ved annullering
-                    .addLineItem(
-                            SessionCreateParams.LineItem.builder()
-                                    .setQuantity(1L)
-                                    .setPriceData(
-                                            SessionCreateParams.LineItem.PriceData.builder()
-                                                    .setCurrency("dkk")
-                                                    .setUnitAmount(amountInCents) // Beløb i cent
-                                                    .setProductData(
-                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                                    .setName(description) // Beskrivelse
-                                                                    .build()
-                                                    )
-                                                    .build()
-                                    )
-                                    .build()
-                    )
-                    .build();
+                    .addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L).setPriceData(SessionCreateParams.LineItem.PriceData.builder().setCurrency("dkk").setUnitAmount(amountInCents) // Beløb i cent
+                            .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder().setName(description) // Beskrivelse
+                                    .build()).build()).build()).build();
 
             // Opret session hos Stripe
             Session session = Session.create(params);

@@ -23,7 +23,6 @@ public class PartsListGenerator {
     private final PartsList partsList = new PartsList();
 
 
-
     public PartsListGenerator(double length, double width, double height) {
         Material rafters = calculateRafters(width);
         Material Straps = calculateStraps(length, width);
@@ -68,9 +67,7 @@ public class PartsListGenerator {
             System.out.println("Ingen priser fundet for: " + searchTerm);
             pricePerRafter = BigDecimal.ZERO;
         } else {
-            String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty()
-                    ? products.get(0).getPrice()
-                    : products.get(0).getExternalPrice().toString();
+            String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty() ? products.get(0).getPrice() : products.get(0).getExternalPrice().toString();
 
             try {
                 pricePerRafter = new BigDecimal(priceAsString);
@@ -84,22 +81,18 @@ public class PartsListGenerator {
         BigDecimal totalPriceForRafters = pricePerRafter.multiply(BigDecimal.valueOf(totalRafters));
 
         // Tilføj hvert spær som et individuelt materiale til partsList
-        partsList.addMaterial(new Material(
-                String.format("Spærtræ - %d cm", selectedLength), // Navn med længden
+        partsList.addMaterial(new Material(String.format("Spærtræ - %d cm", selectedLength), // Navn med længden
                 totalRafters,                                    // Antal
                 pricePerRafter                                   // Enhedspris
         ));
 
         // Returnér samlet objekt for alle spær
-        return new Material(
-                "Spærtræ (samlet)",          // Navn for samlet oversigt
+        return new Material("Spærtræ (samlet)",          // Navn for samlet oversigt
                 totalRafters,                // Samlet antal spær
                 BigDecimal.ZERO,             // Enhedspris er ikke relevant
                 totalPriceForRafters         // Totalpris for alle spær
         );
     }
-
-
 
 
     public Material calculatePoles(double length, double height) {
@@ -162,9 +155,7 @@ public class PartsListGenerator {
                     continue;
                 }
 
-                String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty()
-                        ? products.get(0).getPrice()
-                        : products.get(0).getExternalPrice().toString();
+                String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty() ? products.get(0).getPrice() : products.get(0).getExternalPrice().toString();
 
                 BigDecimal pricePerPole;
                 try {
@@ -186,18 +177,11 @@ public class PartsListGenerator {
 
 
         // Returnér et samlet objekt
-        return new Material(
-                "Stolper (samlet)",
-                totalPoles, // Samlet antal stolper
+        return new Material("Stolper (samlet)", totalPoles, // Samlet antal stolper
                 BigDecimal.ZERO, // Enhedspris ikke relevant for samlet objekt
                 totalPrice // Totalpris
         );
     }
-
-
-
-
-
 
 
     public Material calculateStraps(double length, double width) {
@@ -253,9 +237,7 @@ public class PartsListGenerator {
                     continue;
                 }
 
-                String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty()
-                        ? products.get(0).getPrice()
-                        : products.get(0).getExternalPrice().toString();
+                String priceAsString = products.get(0).getPrice() != null && !products.get(0).getPrice().isEmpty() ? products.get(0).getPrice() : products.get(0).getExternalPrice().toString();
 
                 BigDecimal pricePerUnit;
                 try {
@@ -275,21 +257,13 @@ public class PartsListGenerator {
         }
 
         // Retuner et helt samlet objekt for alle vores remme
-        return new Material(
-                "Remme (samlet)",
-                lengthUsage.values().stream().mapToInt(Integer::intValue).sum(), // Samlet antal remme
+        return new Material("Remme (samlet)", lengthUsage.values().stream().mapToInt(Integer::intValue).sum(), // Samlet antal remme
                 BigDecimal.ZERO, // Vi bruger ikke unitPrice her
                 totalPrice // Totalpris er korrekt beregnet
         );
 
 
     }
-
-
-
-
-
-
 
 
     public PartsList getPartsList() {

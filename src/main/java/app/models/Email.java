@@ -1,4 +1,4 @@
-package app.config;
+package app.models;
 
 public class Email {
     private String recipient;

@@ -1,4 +1,5 @@
 package app.models;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,7 @@ public class PartsList {
     }
 
     public BigDecimal getTotalCost() {
-        return materials.stream()
-                .map(Material::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return materials.stream().map(Material::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<Material> getMaterials() {

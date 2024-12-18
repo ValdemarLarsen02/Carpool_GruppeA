@@ -13,21 +13,28 @@ public class PredefinedCarports {
 
     private DatabaseController dbController;
     private PredefinedCarportsService predefinedCarportsService;
+
     public PredefinedCarports(DatabaseController dbController, PredefinedCarportsService predefinedCarportsService) {
         this.dbController = dbController;
         this.predefinedCarportsService = predefinedCarportsService;
     }
 
     public void registerRoutes(Javalin app) {
-        app.get("/carporte", this::loadCaports);
+        app.get("/carporte", this::loadCarports);
         app.get("/carport/details/{id}", this::showCarportDetails); // Route for detaljeret visning af en carport
 
-
+        app.get("/create-carport", this::showCreateCarportForm);
+        app.post("/create-carport", this::createCarport);
+        app.get("/carport-succes", this::showCarportSucces);
         app.post("/create-request", this::createRequest);
     }
 
+    public void showCreateCarportForm(Context ctx) {
+        ctx.render("create-carport.html");
+    }
 
-    public void loadCaports(Context ctx) {
+
+    public void loadCarports(Context ctx) {
         List<Carport> carports = predefinedCarportsService.getCarports();
         ctx.render("carport_oversigt.html", Map.of("carports", carports));
     }
@@ -43,17 +50,39 @@ public class PredefinedCarports {
         String svgOutput = carportSVG.generateSVG();
 
         // Send carport-objekt og SVG-output til skabelonen
-        ctx.render("carport_details.html", Map.of(
-                "carport", carport,
-                "svg", svgOutput
-        ));
+        ctx.render("carport_details.html", Map.of("carport", carport, "svg", svgOutput));
+    }
+
+    public void createCarport(Context ctx) {
+
+        //Henter værdier fra HTTP requesten
+        String carportName = ctx.formParam("carportName");
+        int length = Integer.parseInt(ctx.formParam("length"));
+        int width = Integer.parseInt(ctx.formParam("width"));
+        boolean withShed = Boolean.parseBoolean(ctx.formParam("withShed"));
+        int shedLength = withShed ? Integer.parseInt(ctx.formParam("shedLength")) : 0;
+        int shedWidth = withShed ? Integer.parseInt(ctx.formParam("shedWidth")) : 0;
+        double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
+        String image = ctx.formParam("image");
+
+        //Opretter et nyt carport objekt med de indhentede værdier
+        Carport newCarport = new Carport(predefinedCarportsService.getNextCarportId(), carportName, length, width, withShed, shedLength, shedWidth, totalPrice, image);
+
+        //Gemmer carporten i databasen
+        predefinedCarportsService.addPreDefinedCarportToDatabase(newCarport);
+
+        ctx.redirect("/carport-succes");
+
+
     }
 
     public void createRequest(Context ctx) {
 
     }
 
-
+    public void showCarportSucces(Context ctx) {
+        ctx.render("carport-succes.html");
+    }
 
 
 }

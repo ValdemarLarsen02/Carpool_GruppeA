@@ -77,18 +77,19 @@
         <div class="login-container">
             <h2 class="text-center mb-4">Login</h2>
             <form th:action="@{/salesman-login}" method="post">
-                    <div class="mb-3">
-                        <label for="salesmanId" class="form-label">Vælg Sælger:</label>
-                        <select name="salesmanId" id="salesmanId" class="form-select" required>
-                            <option value="" selected disabled>Vælg en sælger</option>
-                            <option th:each="salesman : ${salesmen}"
-                                    th:value="${salesman.id}"
-                                    th:text="${salesman.name}"></option>
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label for="salesmanId" class="form-label">Vælg Sælger:</label>
+                    <select name="salesmanId" id="salesmanId" class="form-select" required>
+                        <option value="" selected disabled>Vælg en sælger</option>
+                        <option th:each="salesman : ${salesmen}"
+                                th:value="${salesman.id}"
+                                th:text="${salesman.name}"></option>
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Adgangskode:</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Indtast adgangskode" required>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Indtast adgangskode" required>
                 </div>
                 <button type="submit" class="btn btn-dark-blue w-100">Log ind</button>
             </form>

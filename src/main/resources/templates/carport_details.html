@@ -1,65 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="'Detaljer for ' + ${carport.carportName}">Carport Detaljer</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* Flex-container for at dele plads mellem detaljer og tegning */
-    .details-layout {
-      display: flex;
-      flex-wrap: wrap;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Detaljer for ' + ${carport.carportName}">Carport Detaljer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Flex-container for at dele plads mellem detaljer og tegning */
+        .details-layout {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-    /* Sektion for venstre og højre kolonne */
-    .details-column {
-      flex: 1;
-      min-width: 300px; /* Sikrer, at kolonner ikke bliver for smalle */
-    }
+        /* Sektion for venstre og højre kolonne */
+        .details-column {
+            flex: 1;
+            min-width: 300px; /* Sikrer, at kolonner ikke bliver for smalle */
+        }
 
-    /* SVG-container skalerer med pladsen */
-    .svg-container {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-    }
+        /* SVG-container skalerer med pladsen */
+        .svg-container {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+        }
 
-    .svg-content {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-  </style>
+        .svg-content {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-  <h1 th:text="'Detaljer for ' + ${carport.carportName}" class="text-center mb-4">Carport Navn</h1>
+    <h1 th:text="'Detaljer for ' + ${carport.carportName}" class="text-center mb-4">Carport Navn</h1>
 
-  <!-- Layout med dynamisk pladsdeling -->
-  <div class="details-layout">
-    <!-- Venstre kolonne: detaljer -->
-    <div class="details-column">
-      <img th:src="${carport.image}" alt="Carport billede" class="img-fluid mb-4">
-      <p th:text="'Dimensioner: ' + ${carport.width} + 'm x ' + ${carport.length} + 'm'">Dimensioner</p>
-      <p th:text="'Med skur: ' + (${carport.withShed} ? 'Ja' : 'Nej')">Med skur</p>
-      <p th:text="'Pris: ' + ${carport.totalPrice} + ' DKK'">Pris</p>
-    </div>
-
-    <!-- Højre kolonne: tegning -->
-    <div class="details-column">
-      <div class="border p-3">
-        <h3 class="text-center">Carport Tegning</h3>
-        <div class="svg-container">
-          <div th:utext="${svg}" class="svg-content"></div>
+    <!-- Layout med dynamisk pladsdeling -->
+    <div class="details-layout">
+        <!-- Venstre kolonne: detaljer -->
+        <div class="details-column">
+            <img th:src="${carport.image}" alt="Carport billede" class="img-fluid mb-4">
+            <p th:text="'Dimensioner: ' + ${carport.width} + 'm x ' + ${carport.length} + 'm'">Dimensioner</p>
+            <p th:text="'Med skur: ' + (${carport.withShed} ? 'Ja' : 'Nej')">Med skur</p>
+            <p th:text="'Pris: ' + ${carport.totalPrice} + ' DKK'">Pris</p>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="text-center mt-4">
-    <a href="/carporte" class="btn btn-secondary">Tilbage til oversigten</a>
-  </div>
+        <!-- Højre kolonne: tegning -->
+        <div class="details-column">
+            <div class="border p-3">
+                <h3 class="text-center">Carport Tegning</h3>
+                <div class="svg-container">
+                    <div th:utext="${svg}" class="svg-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/carporte" class="btn btn-secondary">Tilbage til oversigten</a>
+    </div>
 </div>
 </body>
 </html>

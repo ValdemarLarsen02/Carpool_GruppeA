@@ -47,8 +47,7 @@ public class PriceFinder {
         // Query til at finde ligheder
         String query = "SELECT * FROM Product WHERE name ILIKE ?";
 
-        try (Connection connection = databaseController.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection connection = databaseController.getConnection(); PreparedStatement stmt = connection.prepareStatement(query)) {
 
             // Tilføj wildcard (%) til søgetermen for at finde lignende resultater
             searchTerm = "%" + searchTerm.trim().replaceAll("\\s*-\\s*", "-") + "%";

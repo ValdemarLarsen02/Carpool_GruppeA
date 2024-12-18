@@ -27,22 +27,11 @@ public class ProductService {
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM Product";
-        try (Connection conn = dbController.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dbController.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             // Iterer over resultaterne og opret produktobjekter
             while (rs.next()) {
-                Product product = new Product(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("price"),
-                        rs.getString("category"),
-                        rs.getBigDecimal("external_price"),
-                        rs.getString("url"),
-                        rs.getString("image_url")
-                );
+                Product product = new Product(rs.getInt("id"), rs.getString("name"), rs.getString("description"), rs.getString("price"), rs.getString("category"), rs.getBigDecimal("external_price"), rs.getString("url"), rs.getString("image_url"));
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -57,10 +46,8 @@ public class ProductService {
      * @param product Et {@link Product}-objekt, der indeholder de data, der skal bruges til indsættelsen i databasen
      */
     public void createProduct(Product product) {
-        String query = "INSERT INTO Product (name, description, price, category, external_price, url, image_url) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = dbController.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "INSERT INTO Product (name, description, price, category, external_price, url, image_url) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = dbController.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Sætter parametre baseret på produktets felter
             stmt.setString(1, product.getName());
@@ -82,10 +69,8 @@ public class ProductService {
      * @param product Et {@link Product}-objekt, der indeholder de opdaterede data. Som vi bruger til at opdateret produktet i databasen.
      */
     public void updateProduct(Product product) {
-        String query = "UPDATE Product SET name = ?, description = ?, price = ?, category = ?, external_price = ?, url = ?, image_url = ? " +
-                "WHERE id = ?";
-        try (Connection conn = dbController.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "UPDATE Product SET name = ?, description = ?, price = ?, category = ?, external_price = ?, url = ?, image_url = ? " + "WHERE id = ?";
+        try (Connection conn = dbController.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Sætter parametre baseret på produktets felter
             stmt.setString(1, product.getName());
@@ -110,8 +95,7 @@ public class ProductService {
      */
     public void deleteProductById(int productId) {
         String query = "DELETE FROM Product WHERE id = ?";
-        try (Connection conn = dbController.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = dbController.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, productId);
             int rowsAffected = stmt.executeUpdate();

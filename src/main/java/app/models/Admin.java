@@ -1,9 +1,8 @@
-package app.config;
+package app.models;
 
 import app.services.ErrorLoggerService;
 import app.controllers.DatabaseController;
 
-import java.awt.image.DataBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,8 +29,7 @@ public class Admin {
 
     public void UpdatePassword(String password) {
         String query = "UPDATE salesman_password SET password = ? WHERE id = 1"; // Id=1 kan være en fast post til kodeordet
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, password);
             preparedStatement.executeUpdate();
@@ -45,9 +43,7 @@ public class Admin {
 
     public String getPassword() {
         String query = "SELECT password FROM salesman_password WHERE id = 1";
-        try (Connection connection = dbController.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
 
             if (resultSet.next()) {
                 return resultSet.getString("password");
