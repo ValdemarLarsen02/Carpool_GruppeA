@@ -106,20 +106,51 @@
                 <tfoot>
                 <tr>
                     <td colspan="3" class="text-end"><strong>Samlet Pris:</strong></td>
-                    <td th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK</td>
+                    <td id="totalMaterialCost" th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT')} + ' DKK'">0.00 DKK</td>
                 </tr>
                 </tfoot>
             </table>
+            <!-- Beregn Pris Sektion -->
+            <div class="mt-4 p-3 border rounded bg-light">
+                <h4 class="text-secondary">Beregn Pris</h4>
+                <div class="mb-3">
+                    <label for="markupPercentage" class="form-label">Dækningsgrad (%)</label>
+                    <input type="number" class="form-control" id="markupPercentage" placeholder="Indtast dækningsgrad (f.eks. 20)" min="0" step="1">
+                </div>
+
+                <button class="btn btn-primary mb-3" onclick="calculateSellingPrice()">Beregn Salgspris</button>
+
+                <!-- Resultattabel -->
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Omkostninger (Materialer)</th>
+                        <th>Dækningsgrad (%)</th>
+                        <th>Overskud</th>
+                        <th>Salgspris</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td id="costPrice">0.00 DKK</td>
+                        <td id="markupResult">0%</td>
+                        <td id="profitAmount">0.00 DKK</td>
+                        <td id="sellingPrice">0.00 DKK</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success mb-3" onclick="sendPriceToCustomerList()">Vedhæft pris</button>
+            </div>
         </div>
 
         <!-- Midterste Kolonne -->
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h1 class="text-center">Rediger Forespørgsel</h1>
+                    <h1 class="text-center">Send besked til kunde</h1>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/edit-inquiry}" method="post" th:object="${inquiry}">
+                    <form id="brugerRequest" th:action="@{/edit-inquiry}" method="post" th:object="${inquiry}">
                         <input type="hidden" name="id" th:value="${inquiry.id}">
 
                         <!-- Kundeoplysninger -->
@@ -160,11 +191,24 @@
                             <input type="number" class="form-control" id="shedWidth" name="shedWidth"
                                    th:value="${inquiry.shedWidth}" placeholder="Indtast bredden på skuret">
                         </div>
+
+
                         <div class="mb-3">
                             <label for="comments" class="form-label">Kommentarer</label>
                             <textarea class="form-control" id="comments" name="comments" rows="4"
                                       placeholder="Skriv kommentarer her..." th:text="${inquiry.comments}"></textarea>
                         </div>
+
+
+                        <div class="mb-3">
+                            <input type="hidden" id="svgOutputHidden" name="svgOutput" th:value="${svgOutput}">
+                        </div>
+
+                        <div id="totalCostCustomerContainer" class="mb-3 d-none">
+                            <label for="calculatedSellingPrice" class="form-label">Salgspris</label>
+                            <input type="number" class="form-control" id="calculatedSellingPrice" name="calculatedSellingPrice" step="any">
+                        </div>
+
 
                         <!-- Knapper -->
                         <div class="d-flex justify-content-between mt-4">
@@ -194,6 +238,60 @@
         </p>
     </div>
 </footer>
+
+
+<script>
+    function calculateSellingPrice() {
+        // Hent samlet pris fra tabellen
+        const totalMaterialCostText = document.getElementById("totalMaterialCost").innerText;
+
+        // Konverter til numerisk værdi (fjern 'DKK' og komma)
+        const totalMaterialCost = parseFloat(totalMaterialCostText.replace(' DKK', '').replace(',', ''));
+
+        // Hent dækningsgrad
+        const markupPercentage = parseFloat(document.getElementById("markupPercentage").value);
+
+        // Valider input
+        if (isNaN(totalMaterialCost) || isNaN(markupPercentage) || markupPercentage < 0) {
+            alert("Indtast en gyldig dækningsgrad og kontrolér den samlede pris.");
+            return;
+        }
+
+        // Beregn overskud og salgspris
+        const profitAmount = totalMaterialCost * (markupPercentage / 100);
+        const sellingPrice = totalMaterialCost + profitAmount;
+
+        // Opdater resultattabel
+        document.getElementById("costPrice").innerText = totalMaterialCost.toFixed(2) + " DKK";
+        document.getElementById("markupResult").innerText = markupPercentage.toFixed(1) + "%";
+        document.getElementById("profitAmount").innerText = profitAmount.toFixed(2) + " DKK";
+        document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2) + " DKK";
+        document.getElementById("sellingPrice").value = sellingPrice.toFixed(2); // sætter også som value, så værdi er nemmere at få fat i.
+    }
+
+    function sendPriceToCustomerList() {
+        //Henter slagsprisen der er udregnet:
+        let salgsPris = document.getElementById("sellingPrice").value;
+
+        if (!salgsPris || salgsPris === '' || salgsPris === null) {
+            alert("Du skal foretage en udregning før du kan vedhæfte prisen...");
+            return; // Stopper resten af koden for at køre..
+        }
+
+
+        const calculatedSellingPriceContainer = document.getElementById("totalCostCustomerContainer");
+        let calculatedSellingPriceInput = document.getElementById("calculatedSellingPrice");
+
+        //Gør vores container synlig:
+        calculatedSellingPriceContainer.classList.remove("d-none");
+
+
+        calculatedSellingPriceInput.value = salgsPris;
+    }
+</script>
+
+
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

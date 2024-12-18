@@ -4,14 +4,20 @@ import app.config.Customer;
 import app.config.Email;
 import app.config.Inquiry;
 import app.controllers.DatabaseController;
+import app.controllers.StripePayment;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
+
+import static app.utils.SvgConverter.convertSvgToPng;
 
 public class EmailService {
 
@@ -29,7 +35,7 @@ public class EmailService {
     private static final String USERNAME = "cphbusiness.dk";
     private static final String PASSWORD = "m29sI48YWo1noeEc";
 
-    public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry, String recipient) {
+    public void sendCustomerInquiryEmail(Customer customer, Inquiry inquiry, String recipient, String tegning) {
         // Opretter session til at sende mailen
 
         try {
@@ -54,7 +60,7 @@ public class EmailService {
 
 
             // Byg emailens indhold
-            String emailContent = buildInquiryEmailContent(customer, inquiry);
+            String emailContent = buildInquiryEmailContent(customer, inquiry, tegning);
 
             // Sæt indholdet af emailen
             message.setContent(emailContent, "text/html");
@@ -71,7 +77,7 @@ public class EmailService {
 
 
     // Byg emailens indhold med kundens forespørgsel
-    private String buildInquiryEmailContent(Customer customer, Inquiry inquiry) {
+    private String buildInquiryEmailContent(Customer customer, Inquiry inquiry, String tegning) {
         StringBuilder content = new StringBuilder();
         content.append("<!DOCTYPE html>");
         content.append("<html lang='en'>");
@@ -80,7 +86,6 @@ public class EmailService {
         content.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
         content.append("</head>");
         content.append("<body>");
-
         // Header
         content.append("<h1>Forespørgsel om Carport</h1>");
 
@@ -96,6 +101,35 @@ public class EmailService {
         content.append("<p><strong>Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" m</p>");
         content.append("<h2>Opdatering fra sælger:</h2>");
         content.append("<p><strong>Kommentar fra sælger: </strong> ").append(inquiry.getComments()).append("</p>");
+
+        if (inquiry.getSalesPrice() != null) {
+
+            //opretter vores betalingslink
+            String beskrivelse = "Betaling til din personlige carport";
+            String paymentUrl = StripePayment.createPaymentLink(inquiry.getSalesPrice(), beskrivelse);
+
+            content.append("<h2>Vi har beregnet en pris til dig!</h2>");
+            content.append("<p><strong>Total pris: </strong> ").append(inquiry.getSalesPrice()).append(" DKK</p>");
+
+            if (paymentUrl != null) {
+                content.append("<p><strong>Link til betaling: </strong> ").append(paymentUrl).append("</p>");
+                content.append("<p>Dette link er gyldigt i 24 timer</p>");
+            }
+
+        }
+
+
+        // Base64-encode din SVG
+        String pictureUrl = "";
+        pictureUrl = convertSvgToPng(tegning);
+
+
+        // Tilføj det i HTML som en data:image
+        content.append("<h3>Din carport tegning:</h3>");
+        content.append("<img src='").append(pictureUrl)
+                .append("' alt='Carport Tegning' style='max-width: 600px; height: auto; display: block; margin: 0 auto;'/>");
+
+
         // Footer
         content.append("<p>Tak for din forespørgsel! Vi vender tilbage hurtigst muligt.</p>");
 
@@ -106,14 +140,14 @@ public class EmailService {
     }
 
 
-    public void saveEmailsToDatabase(Inquiry inquiry, Customer customer, DatabaseController dbController) {
+    public void saveEmailsToDatabase(Inquiry inquiry, Customer customer, DatabaseController dbController, String tegning) {
 
         String query = "INSERT INTO sent_emails (recipient_email, subject, content) VALUES (?, ?, ?)";
 
         try (Connection connection = dbController.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             // Byg e-mailens indhold baseret på inquiry og customer
-            String emailContent = buildInquiryEmailContent(customer, inquiry);
+            String emailContent = buildInquiryEmailContent(customer, inquiry, tegning);
 
             // Sæt værdier til placeholders
             preparedStatement.setString(1, customer.getEmail());

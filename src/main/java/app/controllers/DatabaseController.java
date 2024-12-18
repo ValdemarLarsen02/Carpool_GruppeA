@@ -29,7 +29,6 @@ public class DatabaseController {
             config.setConnectionTimeout(30000); // Timeout for at få en forbindelse
 
             this.dataSource = new HikariDataSource(config);
-            System.out.println("Connection pool initialized.");
         } catch (Exception e) {
             System.err.println("Failed to initialize connection pool: " + e.getMessage());
         }

@@ -17,7 +17,7 @@ public class Inquiry {
     private Double shedWidth;
     private String comments;
     private Customer customer;
-
+    private Double salesPrice;
 
     public Inquiry() {
     }
@@ -99,6 +99,10 @@ public class Inquiry {
         this.comments = comments;
     }
 
+    public void setSalesPrice(Double salesPrice) {
+        this.salesPrice = salesPrice;
+    }
+
     public boolean isSalesmanAssigned() {
         return salesmanAssigned;
     }
@@ -145,6 +149,10 @@ public class Inquiry {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public Double getSalesPrice() {
+        return salesPrice;
     }
 
     @Override

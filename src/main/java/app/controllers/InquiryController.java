@@ -165,13 +165,25 @@ public class InquiryController {
             inquiry.setEmailSent(requestParser.parseNullableBoolean(ctx.formParam("emailSent")));
 
 
+
+            //henter vores tegning:
+            String tegning = ctx.formParam("svgOutput");
+
+
+
+            //henter evt salgspris hvis udregnet
+            Double salesPrice = requestParser.parseDouble(ctx.formParam("calculatedSellingPrice"));
+
+            inquiry.setSalesPrice(salesPrice); // Sætter pris til vores objekt.
+
+
             // Opdater forespørgslen i databasen
             inquiryService.updateInquiryInDatabase(inquiry);
 
             Customer customer = inquiryService.getCustomerByInquiryId(inquiry.getId());
             String recipient = customer.getEmail();
-            emailService.sendCustomerInquiryEmail(customer, inquiry, recipient);
-            emailService.saveEmailsToDatabase(inquiry, customer, dbController);
+            emailService.sendCustomerInquiryEmail(customer, inquiry, recipient, tegning);
+            emailService.saveEmailsToDatabase(inquiry, customer, dbController, tegning);
 
             showAllInquiries(ctx); //viser vores liste igen her.
         } catch (Exception e) {
