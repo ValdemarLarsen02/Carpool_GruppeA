@@ -93,10 +93,10 @@ public class EmailService {
 
         // Body: Forespørgsel information
         content.append("<h2>Carport Forespørgsel</h2>");
-        content.append("<p><strong>Carport Længde:</strong> ").append(inquiry.getCarportLength()).append(" m</p>");
-        content.append("<p><strong>Carport Bredde:</strong> ").append(inquiry.getCarportWidth()).append(" m</p>");
-        content.append("<p><strong>Redskabsskur længde:</strong> ").append(inquiry.getShedLength()).append(" m</p>");
-        content.append("<p><strong>Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" m</p>");
+        content.append("<p><strong>Carport Længde:</strong> ").append(inquiry.getCarportLength()).append(" cm</p>");
+        content.append("<p><strong>Carport Bredde:</strong> ").append(inquiry.getCarportWidth()).append(" cm</p>");
+        content.append("<p><strong>Redskabsskur længde:</strong> ").append(inquiry.getShedLength()).append(" cm</p>");
+        content.append("<p><strong>Redskabsskur bredde:</strong> ").append(inquiry.getShedWidth()).append(" cm</p>");
         content.append("<h2>Opdatering fra sælger:</h2>");
         content.append("<p><strong>Kommentar fra sælger: </strong> ").append(inquiry.getComments()).append("</p>");
 

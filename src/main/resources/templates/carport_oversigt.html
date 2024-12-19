@@ -65,7 +65,7 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="${carport.carportName}">Carport Navn</h5>
                     <p class="card-text"
-                       th:text="'Dimensioner: ' + ${carport.width} + 'm x ' + ${carport.length} + 'm'">Dimensioner</p>
+                       th:text="'Dimensioner: ' + ${carport.width} + 'cm x ' + ${carport.length} + 'cm'">Dimensioner</p>
                     <p class="card-text" th:text="'Med skur: ' + (${carport.withShed} ? 'Ja' : 'Nej')">Med skur</p>
                     <p class="card-text" th:text="'Pris: ' + ${carport.totalPrice} + ' DKK'">Pris</p>
                     <a th:href="@{/carport/details/{id}(id=${carport.carportId})}" class="btn btn-primary">Se

@@ -41,7 +41,7 @@
         <!-- Venstre kolonne: detaljer -->
         <div class="details-column">
             <img th:src="${carport.image}" alt="Carport billede" class="img-fluid mb-4">
-            <p th:text="'Dimensioner: ' + ${carport.width} + 'm x ' + ${carport.length} + 'm'">Dimensioner</p>
+            <p th:text="'Dimensioner: ' + ${carport.width} + 'cm x ' + ${carport.length} + 'cm'">Dimensioner</p>
             <p th:text="'Med skur: ' + (${carport.withShed} ? 'Ja' : 'Nej')">Med skur</p>
             <p th:text="'Pris: ' + ${carport.totalPrice} + ' DKK'">Pris</p>
         </div>
