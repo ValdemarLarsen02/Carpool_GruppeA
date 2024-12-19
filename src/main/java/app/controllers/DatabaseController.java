@@ -67,7 +67,7 @@ public class DatabaseController {
         try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(query)) {
 
             int affectedRows = stmt.executeUpdate();
-            System.out.println("Query executed successfully. Rows affected: " + affectedRows); // her skal vi evt gøre noget andet end bare at printe noget er sket hehe
+            System.out.println("Query executed successfully. Rows affected: " + affectedRows);
         } catch (SQLException e) {
             System.err.println("Query execution failed: " + e.getMessage());
         }

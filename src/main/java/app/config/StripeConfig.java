@@ -6,9 +6,8 @@ import app.utils.ConfigLoader;
 
 public class StripeConfig {
     public static void initialize() {
-
-
-        Stripe.apiKey = ConfigLoader.getProperty("stripe.apiKey"); // Henter vores api nøgle.
+        //henter blot vores api key fra config.properties af
+        Stripe.apiKey = ConfigLoader.getProperty("stripe.apiKey");
     }
 
 

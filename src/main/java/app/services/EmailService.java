@@ -27,7 +27,7 @@ public class EmailService {
         this.errorLogger = errorLogger;
     }
 
-    // SMTP server detaljer
+    // SMTP server detaljer | Bøde blive lagt et sikkert sted :)
     private static final String SMTP_HOST = "mail.smtp2go.com";
     private static final String SMTP_PORT = "2525";
     private static final String USERNAME = "cphbusiness.dk";

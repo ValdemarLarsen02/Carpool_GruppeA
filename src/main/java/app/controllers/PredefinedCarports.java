@@ -21,7 +21,7 @@ public class PredefinedCarports {
 
     public void registerRoutes(Javalin app) {
         app.get("/carporte", this::loadCarports);
-        app.get("/carport/details/{id}", this::showCarportDetails); // Route for detaljeret visning af en carport
+        app.get("/carport/details/{id}", this::showCarportDetails);
 
         app.get("/create-carport", this::showCreateCarportForm);
         app.post("/create-carport", this::createCarport);
@@ -34,11 +34,14 @@ public class PredefinedCarports {
     }
 
 
+    //henter alle vores carporte fra databasen:
     public void loadCarports(Context ctx) {
         List<Carport> carports = predefinedCarportsService.getCarports();
         ctx.render("carport_oversigt.html", Map.of("carports", carports));
     }
 
+
+    //henter en carport ud fra id.
     public void showCarportDetails(Context ctx) {
         int carportId = Integer.parseInt(ctx.pathParam("id"));
         Carport carport = predefinedCarportsService.getCarportById(carportId);

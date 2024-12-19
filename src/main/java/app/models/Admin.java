@@ -19,13 +19,6 @@ public class Admin {
         this.dbController = dbController;
     }
 
-    public void editAnyInquiry(Inquiry inquiry) {
-        // Implementation here
-    }
-
-    public void manageProducts() {
-        // Implementation here
-    }
 
     public void UpdatePassword(String password) {
         String query = "UPDATE salesman_password SET password = ? WHERE id = 1"; // Id=1 kan være en fast post til kodeordet

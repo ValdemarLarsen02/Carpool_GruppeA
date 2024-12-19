@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         // Initializing Javalin and Jetty webserver
         Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/public"); // Til CSS og JS
+            config.staticFiles.add("/public");
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(8080);
@@ -35,13 +35,11 @@ public class Main {
         //Service
         PredefinedCarportsService predefinedCarportsService = new PredefinedCarportsService(dbController);
 
-        // Routing
+        // Læser vores start side.
         app.get("/", ctx -> ctx.render("index.html"));
 
-        //app.get("/oversigt", ctx -> ctx.render("carport_oversigt.html"));
 
 
-        app.get("/test", ctx -> ctx.render("payment.html"));
         PredefinedCarports predefinedCarports = new PredefinedCarports(dbController, predefinedCarportsService);
 
         InquiryController inquiryController = new InquiryController(inquiryService, salesmanService, requestParser, emailService, customerService, dbController);

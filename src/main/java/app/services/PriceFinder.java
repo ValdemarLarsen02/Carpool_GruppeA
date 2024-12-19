@@ -53,7 +53,6 @@ public class PriceFinder {
             searchTerm = "%" + searchTerm.trim().replaceAll("\\s*-\\s*", "-") + "%";
             stmt.setString(1, searchTerm);
 
-            // Log den endelige query for debugging
 
             ResultSet rs = stmt.executeQuery();
             boolean found = false; // Brug en indikator til at spore, om noget blev fundet
